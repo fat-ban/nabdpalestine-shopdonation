@@ -1,0 +1,798 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  
+  /* Modern Palestine Color Palette */
+  --palestine-red: #E53E3E;
+  --palestine-red-dark: #C53030;
+  --palestine-red-light: #FEB2B2;
+  --palestine-red-50: #FEF5F5;
+  
+  --palestine-green: #38A169;
+  --palestine-green-dark: #2F855A;
+  --palestine-green-light: #9AE6B4;
+  --palestine-green-50: #F0FFF4;
+  
+  --palestine-black: #1A202C;
+  --palestine-black-light: #2D3748;
+  --palestine-black-50: #F7FAFC;
+  
+  --palestine-white: #FFFFFF;
+  --palestine-cream: #FFFAF0;
+  
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: var(--palestine-red);
+  --primary-foreground: var(--palestine-white);
+  --secondary: var(--palestine-green-50);
+  --secondary-foreground: var(--palestine-green-dark);
+  --muted: #F7FAFC;
+  --muted-foreground: #718096;
+  --accent: var(--palestine-green-50);
+  --accent-foreground: var(--palestine-green-dark);
+  --destructive: #E53E3E;
+  --destructive-foreground: #ffffff;
+  --border: rgba(26, 32, 44, 0.1);
+  --input: transparent;
+  --input-background: #F7FAFC;
+  --switch-background: #CBD5E0;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--palestine-red);
+  --chart-1: var(--palestine-red);
+  --chart-2: var(--palestine-green);
+  --chart-3: var(--palestine-black);
+  --chart-4: #FBD38D;
+  --chart-5: #B794F6;
+  --radius: 0.75rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: var(--palestine-red);
+  --sidebar-primary-foreground: var(--palestine-white);
+  --sidebar-accent: var(--palestine-green-50);
+  --sidebar-accent-foreground: var(--palestine-green-dark);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: var(--palestine-red);
+}
+
+.dark {
+  --background: var(--palestine-black);
+  --foreground: var(--palestine-white);
+  --card: var(--palestine-black-light);
+  --card-foreground: var(--palestine-white);
+  --popover: var(--palestine-black-light);
+  --popover-foreground: var(--palestine-white);
+  --primary: var(--palestine-red-light);
+  --primary-foreground: var(--palestine-black);
+  --secondary: var(--palestine-green-dark);
+  --secondary-foreground: var(--palestine-white);
+  --muted: var(--palestine-black-light);
+  --muted-foreground: #A0AEC0;
+  --accent: var(--palestine-green-dark);
+  --accent-foreground: var(--palestine-white);
+  --destructive: var(--palestine-red-light);
+  --destructive-foreground: var(--palestine-black);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: var(--palestine-black-light);
+  --ring: var(--palestine-red-light);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: var(--palestine-red-light);
+  --chart-2: var(--palestine-green-light);
+  --chart-3: var(--palestine-white);
+  --chart-4: #FBD38D;
+  --chart-5: #B794F6;
+  --sidebar: var(--palestine-black);
+  --sidebar-foreground: var(--palestine-white);
+  --sidebar-primary: var(--palestine-red-light);
+  --sidebar-primary-foreground: var(--palestine-black);
+  --sidebar-accent: var(--palestine-green-dark);
+  --sidebar-accent-foreground: var(--palestine-white);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: var(--palestine-red-light);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Custom Palestine Color Classes */
+  --color-palestine-red: var(--palestine-red);
+  --color-palestine-red-dark: var(--palestine-red-dark);
+  --color-palestine-red-light: var(--palestine-red-light);
+  --color-palestine-red-50: var(--palestine-red-50);
+  --color-palestine-green: var(--palestine-green);
+  --color-palestine-green-dark: var(--palestine-green-dark);
+  --color-palestine-green-light: var(--palestine-green-light);
+  --color-palestine-green-50: var(--palestine-green-50);
+  --color-palestine-black: var(--palestine-black);
+  --color-palestine-black-light: var(--palestine-black-light);
+  --color-palestine-black-50: var(--palestine-black-50);
+  --color-palestine-white: var(--palestine-white);
+  --color-palestine-cream: var(--palestine-cream);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Enhanced text shadow utilities for video overlay */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+  }
+  
+  .text-shadow-xl {
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.8),
+      0 4px 8px rgba(0, 0, 0, 0.6),
+      0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+  
+  .video-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+  
+  /* Palestine Color Utilities */
+  .bg-palestine-red { background-color: var(--color-palestine-red); }
+  .bg-palestine-red-dark { background-color: var(--color-palestine-red-dark); }
+  .bg-palestine-red-light { background-color: var(--color-palestine-red-light); }
+  .bg-palestine-red-50 { background-color: var(--color-palestine-red-50); }
+  .bg-palestine-green { background-color: var(--color-palestine-green); }
+  .bg-palestine-green-dark { background-color: var(--color-palestine-green-dark); }
+  .bg-palestine-green-light { background-color: var(--color-palestine-green-light); }
+  .bg-palestine-green-50 { background-color: var(--color-palestine-green-50); }
+  .bg-palestine-black { background-color: var(--color-palestine-black); }
+  .bg-palestine-black-light { background-color: var(--color-palestine-black-light); }
+  .bg-palestine-black-50 { background-color: var(--color-palestine-black-50); }
+  .bg-palestine-white { background-color: var(--color-palestine-white); }
+  .bg-palestine-cream { background-color: var(--color-palestine-cream); }
+  
+  .text-palestine-red { color: var(--color-palestine-red); }
+  .text-palestine-red-dark { color: var(--color-palestine-red-dark); }
+  .text-palestine-red-light { color: var(--color-palestine-red-light); }
+  .text-palestine-green { color: var(--color-palestine-green); }
+  .text-palestine-green-dark { color: var(--color-palestine-green-dark); }
+  .text-palestine-green-light { color: var(--color-palestine-green-light); }
+  .text-palestine-black { color: var(--color-palestine-black); }
+  .text-palestine-black-light { color: var(--color-palestine-black-light); }
+  .text-palestine-white { color: var(--color-palestine-white); }
+  
+  .border-palestine-red { border-color: var(--color-palestine-red); }
+  .border-palestine-green { border-color: var(--color-palestine-green); }
+  .border-palestine-black { border-color: var(--color-palestine-black); }
+  
+  .hover\:bg-palestine-red:hover { background-color: var(--color-palestine-red); }
+  .hover\:bg-palestine-red-dark:hover { background-color: var(--color-palestine-red-dark); }
+  .hover\:bg-palestine-green:hover { background-color: var(--color-palestine-green); }
+  .hover\:bg-palestine-green-dark:hover { background-color: var(--color-palestine-green-dark); }
+  
+  .hover\:text-palestine-red:hover { color: var(--color-palestine-red); }
+  .hover\:text-palestine-green:hover { color: var(--color-palestine-green); }
+  
+  .hover\:shadow-palestine-red\/20:hover { 
+    box-shadow: 0 10px 15px -3px rgba(229, 62, 62, 0.2), 0 4px 6px -2px rgba(229, 62, 62, 0.1); 
+  }
+  .hover\:border-palestine-red\/30:hover { 
+    border-color: rgba(229, 62, 62, 0.3); 
+  }
+}
+
+/* Palestinian Flag Gradient */
+@layer utilities {
+  .bg-palestine-flag {
+    background: linear-gradient(
+      to right,
+      var(--color-palestine-black) 0%,
+      var(--color-palestine-white) 33.33%,
+      var(--color-palestine-green) 66.66%,
+      var(--color-palestine-red) 100%
+    );
+  }
+  
+  .bg-palestine-flag-vertical {
+    background: linear-gradient(
+      to bottom,
+      var(--color-palestine-black) 25%,
+      var(--color-palestine-white) 25% 50%,
+      var(--color-palestine-green) 50% 75%,
+      var(--color-palestine-red) 75%
+    );
+  }
+}
+
+/* Video background and overlay components */
+@layer components {
+  .video-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  
+  .video-hero video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .video-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    z-index: 1;
+  }
+  
+  .video-hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Palestine-inspired header styles */
+  .header-palestine {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(
+      90deg,
+      var(--color-palestine-red) 0%,
+      var(--color-palestine-green) 50%,
+      var(--color-palestine-black) 100%
+    ) 1;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .header-palestine {
+    background: linear-gradient(
+      135deg,
+      rgba(26, 32, 44, 0.98) 0%,
+      rgba(45, 55, 72, 0.95) 100%
+    );
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Enhanced animations for the new logo */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes flag-wave {
+  0%, 100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1.05);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes dome-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), 0 0 20px rgba(229, 62, 62, 0.3), 0 0 30px rgba(56, 161, 105, 0.2);
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(229, 62, 62, 0.4), 0 0 60px rgba(56, 161, 105, 0.3);
+    transform: scale(1.02);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes dove-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 2s infinite;
+  }
+  
+  .animate-flag-wave {
+    animation: flag-wave 3s ease-in-out infinite;
+  }
+  
+  .animate-heartbeat {
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  
+  .animate-dome-glow {
+    animation: dome-glow 3s ease-in-out infinite;
+  }
+  
+  .animate-dove-float {
+    animation: dove-float 2s ease-in-out infinite;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Performance optimizations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+  
+  /* Focus states for accessibility */
+  .focus-visible-outline {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-palestine-red;
+  }
+  
+  /* Loading states */
+  .loading-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .dark .loading-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Special logo enhancements */
+@layer components {
+  .logo-heart {
+    background: linear-gradient(
+      135deg,
+      var(--color-palestine-red) 0%,
+      var(--color-palestine-white) 30%,
+      var(--color-palestine-green) 60%,
+      var(--color-palestine-red) 100%
+    );
+    box-shadow: 
+      0 4px 15px rgba(229, 62, 62, 0.3),
+      inset 0 1px 3px rgba(255, 255, 255, 0.2);
+  }
+  
+  .logo-dome {
+    background: linear-gradient(
+      135deg,
+      #FFD700 0%,
+      #FFA500 50%,
+      #FF8C00 100%
+    );
+    box-shadow: 
+      0 2px 8px rgba(255, 215, 0, 0.4),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  }
+  
+  .logo-heartbeat-line {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-palestine-red) 20%,
+      var(--color-palestine-red) 80%,
+      transparent 100%
+    );
+    height: 2px;
+    position: relative;
+  }
+  
+  .logo-heartbeat-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-palestine-red);
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+  
+  /* Logo without background styles */
+  .logo-transparent {
+    background: transparent !important;
+    backdrop-filter: none;
+    mix-blend-mode: multiply;
+  }
+  
+  .logo-no-bg {
+    background: transparent;
+    object-fit: contain;
+    mix-blend-mode: normal;
+  }
+  
+  .logo-clean {
+    background: transparent;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  .logo-svg-style {
+    background: transparent;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  
+  .logo-header {
+    background: transparent;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+  }
+  
+  .logo-footer {
+    background: transparent;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.1));
+  }
+  
+  .logo-hero {
+    background: transparent;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  /* Chatbot styles */
+  .chatbot-shadow {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(229, 62, 62, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Notification Center styles */
+  .notification-center {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(56, 161, 105, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark .notification-center {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(56, 161, 105, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .notification-item {
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+  }
+  
+  .notification-item:hover {
+    transform: translateX(2px);
+    background: rgba(56, 161, 105, 0.05);
+  }
+  
+  .dark .notification-item:hover {
+    background: rgba(56, 161, 105, 0.1);
+  }
+  
+  .notification-unread {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(229, 62, 62, 0.02) 100%
+    );
+    border-left-color: var(--color-palestine-red);
+  }
+  
+  .dark .notification-unread {
+    background: linear-gradient(
+      135deg,
+      rgba(45, 55, 72, 0.95) 0%,
+      rgba(229, 62, 62, 0.05) 100%
+    );
+  }
+  
+  .notification-read {
+    opacity: 0.8;
+    border-left-color: var(--color-muted-foreground);
+  }
+  
+  .dark .chatbot-shadow {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(229, 62, 62, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .chat-message-user {
+    background: linear-gradient(
+      135deg,
+      var(--color-palestine-red) 0%,
+      var(--color-palestine-red-dark) 100%
+    );
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+  }
+  
+  .chat-message-bot {
+    background: var(--color-muted);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .chat-message-bot {
+    background: var(--color-palestine-black-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  .chat-floating-button {
+    background: linear-gradient(
+      135deg,
+      var(--color-palestine-green) 0%,
+      var(--color-palestine-red) 100%
+    );
+    box-shadow: 
+      0 10px 25px rgba(56, 161, 105, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+  
+  .chat-floating-button:hover {
+    box-shadow: 
+      0 15px 35px rgba(56, 161, 105, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.05);
+  }
+}
