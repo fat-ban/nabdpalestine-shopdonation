@@ -7,7 +7,7 @@ import { Progress } from '../ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { useTheme } from '../contexts/ThemeContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { OrganizationDetails } from '../OrganizationDetails';
+import { OrganizationDetails } from './components/OrganizationDetails';
 import { Organization } from '../../features/donations/types';
 
 export function OrganizationsPage() {

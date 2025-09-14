@@ -1,12 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ChatbotController } from './chatbot.controller';
-import { ChatbotService } from './chatbot.service';
-import { UsersModule } from '../users/users.module';
-import { OrdersModule } from '../orders/orders.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthGuard } from 'src/users/guards/auth.guard';
 
 @Module({
-  imports: [UsersModule, OrdersModule],
-  controllers: [ChatbotController],
-  providers: [ChatbotService],
+  imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '60m' },
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+  providers: [AuthGuard],
 })
 export class ChatbotModule {}

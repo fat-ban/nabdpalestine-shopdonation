@@ -375,7 +375,7 @@ export function DonatePage() {
                 <AlertTitle>{language === 'ar' ? 'خطأ' : 'Error'}</AlertTitle>
                 <AlertDescription>
                   {language === 'ar' ? 'فشل تحميل أسباب التبرع. يرجى المحاولة مرة أخرى في وقت لاحق.' : 'Failed to load donation causes. Please try again later.'}
-                </Aler tDescription>
+                </AlertDescription>
               </Alert>
             ) : (
               <div className="grid md:grid-cols-2 gap-6">
@@ -383,7 +383,8 @@ export function DonatePage() {
                   <Card key={cause.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader>
                       <div className="flex items-center gap-3 mb-3">
-                        <div className={w-12 h-12 ${cause.color} rounded-full flex items-center justify-center text-white}>
+                        <div className={`w-12 h-12 ${cause.color} rounded-full flex items-center justify-center text-white`}>
+
                           <IconComponent iconName={cause.icon} className="h-6 w-6" />
                         </div>
                         <div>
