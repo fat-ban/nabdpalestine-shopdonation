@@ -1,20 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 import App from './App.js';
-import './index.css';
+import { store } from './app/store.js';
 import { AuthProvider } from './components/contexts/AuthContext.js';
 import { StateManagerProvider } from './components/StateManager.js';
-import { ApiProvider } from '@reduxjs/toolkit/query/react';
-import { apiSlice } from './features/api/apiSlice.js';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ApiProvider api={apiSlice}>
+    <Provider store={store}>
       <StateManagerProvider>
         <AuthProvider>
           <App />
         </AuthProvider>
       </StateManagerProvider>
-    </ApiProvider>
+    </Provider>
   </React.StrictMode>,
 );

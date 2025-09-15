@@ -23,7 +23,7 @@ import { AIInteraction } from './ai/entities/ai.entity';
 import { OrderItem } from './order-items/entities/order-item.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { ChatbotModule } from './chatbot/chatbot.module';
+//import { ChatbotModule } from './chatbot/chatbot.module';
 
 
 @Module({
@@ -40,7 +40,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     CommentsModule,
     UsersModule,
     CloudinaryModule,
-    ChatbotModule,
+    //ChatbotModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

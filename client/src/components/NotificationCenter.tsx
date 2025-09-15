@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Bell, X, AlertTriangle, CheckCircle, Info, Calendar, Gift, Heart, Truck, User } from 'lucide-react';
 import { Button } from './ui/button';
-import { Card, CardContent, CardHeader } from './ui/card';
+//import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
 import { Separator } from './ui/separator';
 import { useTheme } from './contexts/ThemeContext';
+import notificationBg from '../assets/shoppalestine.png';
 
 interface NotificationCenterProps {
   isOpen: boolean;
@@ -156,6 +157,12 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
       <div 
         className="fixed right-4 top-16 w-96 max-h-[80vh] bg-background border border-border rounded-xl notification-center overflow-hidden animate-in slide-in-from-top-2 duration-300"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundImage: `url(${notificationBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'soft-light'
+        }}
       >
         {/* Header */}
         <div className="bg-background/95 backdrop-blur-md border-b border-border p-4 sticky top-0 z-10">

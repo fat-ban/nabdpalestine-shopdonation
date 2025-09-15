@@ -1,5 +1,24 @@
+export interface Category {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  description_ar?: string;
+  description_en?: string;
+}
+
+export interface Organization {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  description_ar?: string;
+  description_en?: string;
+  website?: string;
+  contact_email?: string;
+  is_active: boolean;
+}
+
 export interface Product {
-  id: string;
+  id: number;
   name_ar: string;
   name_en: string;
   description_ar: string;
@@ -7,8 +26,15 @@ export interface Product {
   price: number;
   image_url?: string;
   image_public_id?: string;
-  stock_quantity: number;
-  status: ProductStatus;
+  is_active: boolean;
+  is_approved: boolean;
+  approval_status: string;
+  seller_id: string;
+  creator_id: string;
+  category: Category;
+  organization: Organization;
+  average_rating?: number;
+  ratings_count?: number;
   created_at: string;
   updated_at: string;
 }

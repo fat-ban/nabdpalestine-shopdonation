@@ -1,5 +1,5 @@
 import { apiSlice } from '../api/apiSlice';
-import { Product, CreateProductDto, UpdateProductDto } from './types';
+import { CreateProductDto, Product, UpdateProductDto } from './types';
 
 interface FindAllProductsResponse {
     data: Product[];
@@ -14,6 +14,8 @@ export const productApiSlice = apiSlice.injectEndpoints({
         const params = new URLSearchParams();
         params.append('page', page.toString());
         params.append('limit', limit.toString());
+        params.append('isActive', 'true');
+        params.append('isApproved', 'true');
         if (seller) {
             params.append('seller', seller);
         }

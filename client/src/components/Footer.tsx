@@ -2,6 +2,7 @@ import { Heart, Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } fr
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useTheme } from './contexts/ThemeContext';
+import { LinkButton, ExternalLink } from './LinkButton';
 import logoImage from 'figma:asset/bb1259a3c4dfb04d8d03c587099db057050bb68a.png';
 
 interface FooterProps {
@@ -118,12 +119,15 @@ export function Footer({ onNavigate }: FooterProps) {
               <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <button
+                    <LinkButton
                       onClick={link.action}
-                      className="text-white/70 hover:text-white transition-all duration-200 text-sm hover:translate-x-1 block w-full text-left"
+                      className="text-white/70 hover:text-white transition-all duration-200 text-sm hover:translate-x-1 block w-full text-left p-0 h-auto justify-start"
+                      variant="ghost"
+                      scrollToTop={true}
+                      smoothScroll={true}
                     >
                       {link.label}
-                    </button>
+                    </LinkButton>
                   </li>
                 ))}
               </ul>
@@ -164,14 +168,16 @@ export function Footer({ onNavigate }: FooterProps) {
               <h4 className="font-semibold mb-2">{t('followUs')}</h4>
               <div className="flex justify-center md:justify-start gap-4">
                 {socialLinks.map((social, index) => (
-                  <a
+                  <ExternalLink
                     key={index}
                     href={social.href}
-                    aria-label={social.label}
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-palestine-red transition-colors duration-200"
+                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-palestine-red transition-colors duration-200 p-0"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`${social.label} ${language === 'ar' ? '(يفتح في تبويب جديد)' : '(opens in new tab)'}`}
                   >
                     <social.icon className="h-5 w-5" />
-                  </a>
+                  </ExternalLink>
                 ))}
               </div>
             </div>
@@ -224,13 +230,21 @@ export function Footer({ onNavigate }: FooterProps) {
             </div>
 
             <div className="flex items-center gap-6">
-              <button className="text-white/60 hover:text-white transition-colors text-sm">
+              <LinkButton 
+                className="text-white/60 hover:text-white transition-colors text-sm p-0 h-auto"
+                variant="ghost"
+                onClick={() => {}} // Add privacy policy handler
+              >
                 {language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
-              </button>
+              </LinkButton>
               <div className="w-px h-4 bg-white/20"></div>
-              <button className="text-white/60 hover:text-white transition-colors text-sm">
+              <LinkButton 
+                className="text-white/60 hover:text-white transition-colors text-sm p-0 h-auto"
+                variant="ghost"
+                onClick={() => {}} // Add terms of service handler
+              >
                 {language === 'ar' ? 'شروط الاستخدام' : 'Terms of Service'}
-              </button>
+              </LinkButton>
             </div>
           </div>
         </div>

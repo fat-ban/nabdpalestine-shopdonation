@@ -47,7 +47,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USERNAME=your_mysql_username
 DB_PASSWORD=your_mysql_password
-DB_DATABASE=fahla_article_db
+DB_DATABASE=palestine_donationshop
 
 # Server Configuration
 PORT=5000
@@ -62,7 +62,7 @@ NODE_ENV=development
 
 3. Make sure you have MySQL running and create the database:
 ```sql
-CREATE DATABASE fahla_article_db;
+CREATE DATABASE palestine_donationshop;
 ```
 
 ## Compile and run the project

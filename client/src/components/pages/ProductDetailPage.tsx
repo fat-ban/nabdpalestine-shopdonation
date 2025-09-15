@@ -12,9 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Minus,
-  Edit,
-  Trash2
+  Minus
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
@@ -26,25 +24,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useCart, Product } from '../contexts/CartContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { toast } from 'sonner';
-import { useGetProductQuery } from '../../../features/products/productApiSlice';
-import { 
-    useFindAllCommentsQuery, 
-    useCreateCommentMutation, 
-    useUpdateCommentMutation, 
-    useRemoveCommentMutation 
-} from '../../../features/comments/commentsApiSlice';
-import { 
-    useGetProductAverageRatingQuery,
-    useFindAllRatingsQuery,
-    useGetUserProductRatingQuery,
-    useCreateRatingMutation,
-    useUpdateRatingMutation,
-    useRemoveRatingMutation
-} from '../../../features/ratings/ratingsApiSlice';
-import { LoadingSpinner } from '../LoadingSpinner';
-import { Textarea } from '../ui/textarea';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { selectCurrentUser } from '../../../features/auth/authSlice';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -55,34 +34,195 @@ interface ProductDetailPageProps {
 export function ProductDetailPage({ productId, onNavigate, onBackToStore }: ProductDetailPageProps) {
   const { language } = useTheme();
   const { addToCart } = useCart();
-  const user = useAppSelector(selectCurrentUser);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [commentsPage, setCommentsPage] = useState(1);
-  const [ratingsPage, setRatingsPage] = useState(1);
-  const [newComment, setNewComment] = useState('');
-  const [editingComment, setEditingComment] = useState(null);
-  const [userRating, setUserRating] = useState(0);
 
-  const { data: product, isLoading, isError } = useGetProductQuery(productId);
-  const { data: commentsData, isLoading: isLoadingComments, isFetching: isFetchingComments } = useFindAllCommentsQuery({ page: commentsPage, limit: 5, product: productId });
-  const { data: avgRatingData } = useGetProductAverageRatingQuery(productId);
-  const { data: ratingsData, isLoading: isLoadingRatings, isFetching: isFetchingRatings } = useFindAllRatingsQuery({ page: ratingsPage, limit: 5, product: productId });
-  const { data: userProductRating } = useGetUserProductRatingQuery({ productId, userId: user?.id }, { skip: !user });
+  console.log('ProductDetailPage rendered with productId:', productId);
 
-  const [createComment] = useCreateCommentMutation();
-  const [updateComment] = useUpdateCommentMutation();
-  const [removeComment] = useRemoveCommentMutation();
-  const [createRating] = useCreateRatingMutation();
-  const [updateRating] = useUpdateRatingMutation();
-  const [removeRating] = useRemoveRatingMutation();
+  // Mock product database - in real app this would come from API/context
+  const products: Product[] = [
+    {
+      id: '1',
+      name: 'كتاب تاريخ فلسطين',
+      nameEn: 'History of Palestine Book',
+      description: 'كتاب شامل عن تاريخ فلسطين العريق والتراث الثقافي الغني',
+      descriptionEn: 'Comprehensive book about Palestinian history and rich cultural heritage',
+      price: 25,
+      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rcyUyMGVkdWNhdGlvbiUyMGxlYXJuaW5nfGVufDF8fHx8MTc1NTM0MzQyMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'كتب',
+      categoryEn: 'books',
+      stock: 50,
+      isHandmade: false,
+      origin: 'رام الله، فلسطين',
+      originEn: 'Ramallah, Palestine',
+      materials: ['ورق عالي الجودة', 'غلاف مقوى'],
+      materialsEn: ['High-quality paper', 'Hardcover'],
+      careInstructions: ['حفظ في مكان جاف', 'تجنب أشعة الشمس المباشرة'],
+      careInstructionsEn: ['Store in dry place', 'Avoid direct sunlight'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 30,
+      isNewArrival: false,
+      isBestSeller: true,
+      dimensions: '24 × 17 سم',
+      dimensionsEn: '24 × 17 cm',
+      weight: '0.5 كيلوغرام',
+      weightEn: '0.5 kg'
+    },
+    {
+      id: '2',
+      name: 'كوفية فلسطينية أصلية',
+      nameEn: 'Authentic Palestinian Keffiyeh',
+      description: 'كوفية مصنوعة يدوياً بالطريقة التقليدية من قبل حرفيين فلسطينيين',
+      descriptionEn: 'Handmade traditional keffiyeh crafted by Palestinian artisans',
+      price: 45,
+      image: 'https://images.unsplash.com/photo-1657470036063-c7e49da31393?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMGVtYnJvaWRlcnklMjB0ZXh0aWxlc3xlbnwxfHx8fDE3NTUzNDI2MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'ملابس',
+      categoryEn: 'clothing',
+      stock: 25,
+      isHandmade: true,
+      origin: 'الخليل، فلسطين',
+      originEn: 'Hebron, Palestine',
+      artisan: 'أحمد أبو عيسى',
+      artisanEn: 'Ahmed Abu Issa',
+      materials: ['قطن طبيعي 100%', 'خيوط ملونة'],
+      materialsEn: ['100% Natural cotton', 'Colored threads'],
+      careInstructions: ['غسل بالماء البارد', 'تجفيف طبيعي', 'مكواة خفيفة'],
+      careInstructionsEn: ['Wash with cold water', 'Air dry', 'Light iron'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 35,
+      isNewArrival: true,
+      isBestSeller: false,
+      dimensions: '110 × 110 سم',
+      dimensionsEn: '110 × 110 cm',
+      weight: '0.2 كيلوغرام',
+      weightEn: '0.2 kg'
+    },
+    {
+      id: '3',
+      name: 'خريطة فلسطين التاريخية',
+      nameEn: 'Historical Palestine Map',
+      description: 'خريطة مطبوعة عالية الجودة تظهر فلسطين التاريخية بتفاصيلها الجغرافية',
+      descriptionEn: 'High-quality printed map showing historical Palestine with geographical details',
+      price: 20,
+      image: 'https://images.unsplash.com/photo-1562236457-bdc2bec633cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMG1hcmtldCUyMGJhemFhcnxlbnwxfHx8fDE3NTUzNDI2MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'فن',
+      categoryEn: 'art',
+      stock: 30,
+      isHandmade: false,
+      origin: 'القدس، فلسطين',
+      originEn: 'Jerusalem, Palestine',
+      materials: ['ورق فوتوغرافي مقاوم للماء'],
+      materialsEn: ['Water-resistant photo paper'],
+      careInstructions: ['تجنب أشعة الشمس المباشرة', 'تنظيف بقطعة قماش جافة'],
+      careInstructionsEn: ['Avoid direct sunlight', 'Clean with dry cloth'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 25,
+      isNewArrival: false,
+      isBestSeller: false,
+      dimensions: '60 × 40 سم',
+      dimensionsEn: '60 × 40 cm',
+      weight: '0.1 كيلوغرام',
+      weightEn: '0.1 kg'
+    },
+    {
+      id: '4',
+      name: 'مفتاح القدس الرمزي',
+      nameEn: 'Symbolic Jerusalem Key',
+      description: 'مفتاح رمزي مصنوع من الفضة الخالصة يحمل رمزية عودة اللاجئين',
+      descriptionEn: 'Symbolic key made of pure silver representing the return of refugees',
+      price: 55,
+      image: 'https://images.unsplash.com/photo-1655682604613-5c59a1ddd45e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYW5kbWFkZSUyMGpld2VscnklMjB0cmFkaXRpb25hbHxlbnwxfHx8fDE3NTUzNDMyMTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'إكسسوارات',
+      categoryEn: 'accessories',
+      stock: 10,
+      isHandmade: true,
+      origin: 'القدس، فلسطين',
+      originEn: 'Jerusalem, Palestine',
+      artisan: 'يوسف النجار',
+      artisanEn: 'Youssef Al-Najjar',
+      materials: ['فضة خالصة 925'],
+      materialsEn: ['Pure 925 Silver'],
+      careInstructions: ['تنظيف بقطعة قماش ناعمة', 'تجنب المواد الكيميائية'],
+      careInstructionsEn: ['Clean with soft cloth', 'Avoid chemicals'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 40,
+      isNewArrival: false,
+      isBestSeller: false,
+      dimensions: '8 × 3 سم',
+      dimensionsEn: '8 × 3 cm',
+      weight: '0.05 كيلوغرام',
+      weightEn: '0.05 kg'
+    },
+    {
+      id: '5',
+      name: 'تطريز فلسطيني يدوي',
+      nameEn: 'Handmade Palestinian Embroidery',
+      description: 'تطريز تقليدي بخيوط حريرية ملونة يحمل تراث الأمهات والجدات الفلسطينيات',
+      descriptionEn: 'Traditional embroidery with colorful silk threads carrying the heritage of Palestinian mothers and grandmothers',
+      price: 80,
+      image: 'https://images.unsplash.com/photo-1699371829505-e9fdde74e869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMGNyYWZ0cyUyMHBvdHRlcnl8ZW58MXx8fHwxNzU1MzQyNjEwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'فن',
+      categoryEn: 'art',
+      stock: 15,
+      isHandmade: true,
+      origin: 'رام الله، فلسطين',
+      originEn: 'Ramallah, Palestine',
+      artisan: 'أم محمد الخليل',
+      artisanEn: 'Um Mohammed Al-Khalil',
+      materials: ['قماش قطني طبيعي', 'خيوط حريرية', 'خرز ملون'],
+      materialsEn: ['Natural cotton fabric', 'Silk threads', 'Colored beads'],
+      careInstructions: ['غسل يدوي فقط', 'تجفيف في الظل', 'مكواة من الخلف'],
+      careInstructionsEn: ['Hand wash only', 'Dry in shade', 'Iron from back'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 45,
+      isNewArrival: false,
+      isBestSeller: true,
+      dimensions: '40 × 30 سم',
+      dimensionsEn: '40 × 30 cm',
+      weight: '0.3 كيلوغرام',
+      weightEn: '0.3 kg'
+    },
+    {
+      id: '6',
+      name: 'قميص نبض فلسطين',
+      nameEn: 'Palestine Pulse T-Shirt',
+      description: 'قميص قطني عالي الجودة بتصميم عصري يحمل شعار نبض فلسطين',
+      descriptionEn: 'High-quality cotton t-shirt with modern design carrying Palestine Pulse logo',
+      price: 30,
+      image: 'https://images.unsplash.com/photo-1573470571028-a0ca7a723959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaWRkbGUlMjBlYXN0ZXJuJTIwZm9vZCUyMGN1aXNpbmV8ZW58MXx8fHwxNzU1MzQyNjE1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      category: 'ملابس',
+      categoryEn: 'clothing',
+      stock: 40,
+      isHandmade: false,
+      origin: 'غزة، فلسطين',
+      originEn: 'Gaza, Palestine',
+      materials: ['قطن 100%', 'أحبار صديقة للبيئة'],
+      materialsEn: ['100% Cotton', 'Eco-friendly inks'],
+      careInstructions: ['غسل في الغسالة بماء بارد', 'مكواة متوسطة الحرارة', 'تجفيف طبيعي'],
+      careInstructionsEn: ['Machine wash cold', 'Medium heat iron', 'Air dry'],
+      shippingInfo: 'شحن مجاني للطلبات فوق 50$',
+      shippingInfoEn: 'Free shipping for orders over $50',
+      donationPercentage: 20,
+      isNewArrival: true,
+      isBestSeller: false,
+      dimensions: 'متوفر بجميع المقاسات',
+      dimensionsEn: 'Available in all sizes',
+      weight: '0.2 كيلوغرام',
+      weightEn: '0.2 kg'
+    }
+  ];
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  // Find the product by ID
+  const product: Product | undefined = products.find(p => p.id === productId);
 
-  if (isError || !product) {
+  // If product not found, show error page
+  if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -101,26 +241,44 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
   }
 
   const productImages = [
-    product.image_url,
-    product.image_url, // In a real app, these would be different angles/views
-    product.image_url
+    product.image,
+    product.image, // In a real app, these would be different angles/views
+    product.image
   ];
 
-  const reviews = commentsData?.data || [];
-  const ratings = ratingsData?.data || [];
+  const reviews = [
+    {
+      id: 1,
+      name: 'أحمد محمد',
+      nameEn: 'Ahmed Mohammed',
+      rating: 5,
+      comment: language === 'ar' ? 'منتج رائع وجودة عالية جداً. وصل بحالة ممتازة.' : 'Excellent product with very high quality. Arrived in perfect condition.',
+      date: '2024-01-15',
+      verified: true
+    },
+    {
+      id: 2,
+      name: 'فاطمة أحمد',
+      nameEn: 'Fatima Ahmed',
+      rating: 5,
+      comment: language === 'ar' ? 'حرفية مذهلة وتصميم جميل. أنصح بشدة!' : 'Amazing craftsmanship and beautiful design. Highly recommend!',
+      date: '2024-01-10',
+      verified: true
+    }
+  ];
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
-    const donationAmount = ((product.price * quantity) * product.donation_percentage / 100).toFixed(2);
+    const donationAmount = ((product.price * quantity) * product.donationPercentage / 100).toFixed(2);
     toast.success(
       language === 'ar' 
-        ? `تم إضافة ${quantity} من ${product.name_ar} إلى السلة • سيتم التبرع بـ $${donationAmount}`
-        : `Added ${quantity} ${product.name_en} to cart • $${donationAmount} will be donated`
+        ? `تم إضافة ${quantity} من ${product.name} إلى السلة • سيتم التبرع بـ $${donationAmount}`
+        : `Added ${quantity} ${product.nameEn} to cart • $${donationAmount} will be donated`
     );
   };
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity >= 1 && newQuantity <= product.stock_quantity) {
+    if (newQuantity >= 1 && newQuantity <= product.stock) {
       setQuantity(newQuantity);
     }
   };
@@ -132,48 +290,6 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
   };
-
-  const handleLoadMoreComments = () => {
-    setCommentsPage(prevPage => prevPage + 1);
-  }
-
-  const handleLoadMoreRatings = () => {
-    setRatingsPage(prevPage => prevPage + 1);
-  }
-
-  const handleCreateComment = async () => {
-      if(newComment.trim() !== '') {
-          await createComment({ content: newComment, product: productId, user: user.id });
-          setNewComment('');
-      }
-  }
-
-  const handleUpdateComment = async (comment) => {
-    if (editingComment && editingComment.id === comment.id) {
-        await updateComment({ id: comment.id, content: comment.content });
-        setEditingComment(null);
-    }
-  };
-
-  const handleRemoveComment = async (id) => {
-      await removeComment(id);
-  }
-
-  const handleCreateRating = async () => {
-    if (userRating > 0) {
-        await createRating({ rating: userRating, product: productId, user: user.id });
-    }
-  }
-
-  const handleUpdateRating = async () => {
-      if (userProductRating) {
-          await updateRating({ id: userProductRating.id, rating: userRating });
-      }
-  }
-
-  const handleRemoveRating = async (id) => {
-      await removeRating(id);
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,7 +330,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
             <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
               <ImageWithFallback
                 src={productImages[currentImageIndex]}
-                alt={language === 'ar' ? product.name_ar : product.name_en}
+                alt={language === 'ar' ? product.name : product.nameEn}
                 className="w-full h-full object-cover"
               />
               
@@ -241,17 +357,17 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
-                {product.is_new_arrival && (
+                {product.isNewArrival && (
                   <Badge className="bg-palestine-green text-white">
                     {language === 'ar' ? 'وصل حديثاً' : 'New Arrival'}
                   </Badge>
                 )}
-                {product.is_best_seller && (
+                {product.isBestSeller && (
                   <Badge className="bg-palestine-red text-white">
                     {language === 'ar' ? 'الأكثر مبيعاً' : 'Best Seller'}
                   </Badge>
                 )}
-                {product.is_handmade && (
+                {product.isHandmade && (
                   <Badge variant="outline" className="bg-white/90">
                     {language === 'ar' ? 'صناعة يدوية' : 'Handmade'}
                   </Badge>
@@ -274,7 +390,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                   >
                     <ImageWithFallback
                       src={img}
-                      alt={`${language === 'ar' ? product.name_ar : product.name_en} ${index + 1}`}
+                      alt={`${language === 'ar' ? product.name : product.nameEn} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -288,29 +404,29 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Badge variant="secondary" className="mb-2">
-                  {language === 'ar' ? product.category.name_ar : product.category.name_en}
+                  {language === 'ar' ? product.category : product.categoryEn}
                 </Badge>
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`h-4 w-4 ${i < (avgRatingData?.average_rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-1">({avgRatingData?.ratings_count || 0} {language === 'ar' ? 'تقييم' : 'reviews'})</span>
+                  <span className="text-sm text-muted-foreground ml-1">(24 {language === 'ar' ? 'تقييم' : 'reviews'})</span>
                 </div>
               </div>
               
               <h1 className="text-3xl font-bold mb-4">
-                {language === 'ar' ? product.name_ar : product.name_en}
+                {language === 'ar' ? product.name : product.nameEn}
               </h1>
               
               <div className="flex items-center gap-4 mb-4">
                 <span className="text-3xl font-bold text-palestine-green">${product.price}</span>
                 <Badge variant="outline" className="text-palestine-red border-palestine-red">
-                  {product.donation_percentage}% {language === 'ar' ? 'تبرع' : 'donation'}
+                  {product.donationPercentage}% {language === 'ar' ? 'تبرع' : 'donation'}
                 </Badge>
               </div>
 
               <p className="text-muted-foreground mb-6">
-                {language === 'ar' ? product.description_ar : product.description_en}
+                {language === 'ar' ? product.description : product.descriptionEn}
               </p>
 
               {/* Artisan Info */}
@@ -321,15 +437,15 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                       <Avatar>
                         <AvatarImage src="/placeholder-artisan.jpg" />
                         <AvatarFallback className="bg-palestine-green text-white">
-                          {(language === 'ar' ? product.artisan.name_ar : product.artisan.name_en)?.charAt(0)}
+                          {(language === 'ar' ? product.artisan : product.artisanEn)?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium">
-                          {language === 'ar' ? 'صُنع بواسطة:' : 'Crafted by:'} {language === 'ar' ? product.artisan.name_ar : product.artisan.name_en}
+                          {language === 'ar' ? 'صُنع بواسطة:' : 'Crafted by:'} {language === 'ar' ? product.artisan : product.artisanEn}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {language === 'ar' ? product.origin_ar : product.origin_en}
+                          {language === 'ar' ? product.origin : product.originEn}
                         </p>
                       </div>
                       <Award className="h-5 w-5 text-yellow-500 ml-auto" />
@@ -355,7 +471,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                     variant="ghost"
                     size="sm"
                     onClick={() => handleQuantityChange(quantity + 1)}
-                    disabled={quantity >= product.stock_quantity}
+                    disabled={quantity >= product.stock}
                     className="h-10 w-10 p-0"
                   >
                     <Plus className="h-4 w-4" />
@@ -363,7 +479,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                 </div>
                 
                 <span className="text-sm text-muted-foreground">
-                  {product.stock_quantity} {language === 'ar' ? 'متوفر' : 'in stock'}
+                  {product.stock} {language === 'ar' ? 'متوفر' : 'in stock'}
                 </span>
               </div>
 
@@ -412,7 +528,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                 {language === 'ar' ? 'التفاصيل' : 'Details'}
               </TabsTrigger>
               <TabsTrigger value="reviews">
-                {language === 'ar' ? 'التقييمات' : 'Reviews'} ({ratings.length})
+                {language === 'ar' ? 'التقييمات' : 'Reviews'} (24)
               </TabsTrigger>
               <TabsTrigger value="shipping">
                 {language === 'ar' ? 'الشحن' : 'Shipping'}
@@ -430,21 +546,21 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                       <div>
                         <span className="font-medium">{language === 'ar' ? 'المواد:' : 'Materials:'}</span>
                         <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
-                          {(language === 'ar' ? product.materials_ar : product.materials_en).map((material, index) => (
+                          {(language === 'ar' ? product.materials : product.materialsEn).map((material, index) => (
                             <li key={index}>{material}</li>
                           ))}
                         </ul>
                       </div>
-                      {product.dimensions_ar && (
+                      {product.dimensions && (
                         <div>
                           <span className="font-medium">{language === 'ar' ? 'الأبعاد:' : 'Dimensions:'}</span>
-                          <p className="text-sm text-muted-foreground">{language === 'ar' ? product.dimensions_ar : product.dimensions_en}</p>
+                          <p className="text-sm text-muted-foreground">{language === 'ar' ? product.dimensions : product.dimensionsEn}</p>
                         </div>
                       )}
-                      {product.weight_ar && (
+                      {product.weight && (
                         <div>
                           <span className="font-medium">{language === 'ar' ? 'الوزن:' : 'Weight:'}</span>
-                          <p className="text-sm text-muted-foreground">{language === 'ar' ? product.weight_ar : product.weight_en}</p>
+                          <p className="text-sm text-muted-foreground">{language === 'ar' ? product.weight : product.weightEn}</p>
                         </div>
                       )}
                     </div>
@@ -452,14 +568,14 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                       <div>
                         <span className="font-medium">{language === 'ar' ? 'تعليمات العناية:' : 'Care Instructions:'}</span>
                         <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
-                          {(language === 'ar' ? product.care_instructions_ar : product.care_instructions_en).map((instruction, index) => (
+                          {(language === 'ar' ? product.careInstructions : product.careInstructionsEn).map((instruction, index) => (
                             <li key={index}>{instruction}</li>
                           ))}
                         </ul>
                       </div>
                       <div>
                         <span className="font-medium">{language === 'ar' ? 'المنشأ:' : 'Origin:'}</span>
-                        <p className="text-sm text-muted-foreground">{language === 'ar' ? product.origin_ar : product.origin_en}</p>
+                        <p className="text-sm text-muted-foreground">{language === 'ar' ? product.origin : product.originEn}</p>
                       </div>
                     </div>
                   </div>
@@ -468,71 +584,43 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Ratings & Reviews</CardTitle>
-                        <CardDescription>See what other customers think about this product.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {user && (
-                            <div className="mb-6">
-                                <h3 className="text-lg font-medium mb-2">Your Rating</h3>
-                                <div className="flex items-center gap-1 mb-2">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star 
-                                            key={i} 
-                                            className={`h-6 w-6 cursor-pointer ${i < (userRating || userProductRating?.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`}
-                                            onClick={() => setUserRating(i + 1)}
-                                        />
-                                    ))}
-                                </div>
-                                <Button onClick={userProductRating ? handleUpdateRating : handleCreateRating}>
-                                    {userProductRating ? 'Update Rating' : 'Submit Rating'}
-                                </Button>
-                            </div>
-                        )}
-                        <div className="flex flex-col gap-2">
-                            <Textarea 
-                                placeholder={language === 'ar' ? 'أضف تعليقك' : 'Add your comment'}
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                            />
-                            <Button onClick={handleCreateComment} className="self-end">
-                                {language === 'ar' ? 'إرسال' : 'Submit'}
-                            </Button>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{language === 'ar' ? 'تقييمات العملاء' : 'Customer Reviews'}</CardTitle>
+                  <CardDescription>
+                    {language === 'ar' ? 'آراء عملائنا حول هذا المنتج' : 'What our customers say about this product'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border-b border-border pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback>{(language === 'ar' ? review.name : review.nameEn).charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{language === 'ar' ? review.name : review.nameEn}</span>
+                          {review.verified && (
+                            <Badge variant="outline" className="text-xs">
+                              {language === 'ar' ? 'مشتري موثق' : 'Verified Purchase'}
+                            </Badge>
+                          )}
                         </div>
-                        {isLoadingRatings && <p>Loading ratings...</p>}
-                        {ratings.map((rating) => (
-                            <div key={rating.id} className="border-b border-border pb-4 last:border-b-0">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarFallback>{(language === 'ar' ? rating.user.name : rating.user.name).charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="font-medium">{language === 'ar' ? rating.user.name : rating.user.name}</span>
-                                    </div>
-                                    <span className="text-sm text-muted-foreground">{new Date(rating.created_at).toLocaleDateString()}</span>
-                                </div>
-                                <div className="flex items-center gap-1 mb-2">
-                                    {[...Array(5)].map((_, i) => (
-                                    <Star 
-                                        key={i} 
-                                        className={`h-4 w-4 ${i < rating.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} 
-                                    />
-                                    ))}
-                                </div>
-                                {user && user.id === rating.user.id && (
-                                    <Button onClick={() => handleRemoveRating(rating.id)} variant="destructive" size="sm"><Trash2 className="h-4 w-4" /></Button>
-                                )}
-                            </div>
+                        <span className="text-sm text-muted-foreground">{review.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`h-4 w-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} 
+                          />
                         ))}
-                        {ratingsData?.hasNextPage && (
-                            <Button onClick={handleLoadMoreRatings} disabled={isFetchingRatings}>
-                                {isFetchingRatings ? 'Loading...' : 'Load More Ratings'}
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{review.comment}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="shipping" className="mt-6">
@@ -542,7 +630,7 @@ export function ProductDetailPage({ productId, onNavigate, onBackToStore }: Prod
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    {language === 'ar' ? product.shipping_info_ar : product.shipping_info_en}
+                    {language === 'ar' ? product.shippingInfo : product.shippingInfoEn}
                   </p>
                   <Separator />
                   <div className="space-y-2">

@@ -1,5 +1,5 @@
 import { apiSlice } from '../api/apiSlice';
-import { Donation, CreateDonationDto, UpdateDonationDto, DonationStatus } from './types';
+import { CreateDonationDto, Donation, DonationStatus, UpdateDonationDto } from './types';
 
 interface Pagination {
   page?: number;
@@ -27,6 +27,15 @@ export const donationsApiSlice = apiSlice.injectEndpoints({
     }),
     getOrganizationStats: builder.query<any, number>({
       query: (orgId) => `/donations/organization/${orgId}/stats`,
+      providesTags: ['Donation'],
+    }),
+    getDonationStats: builder.query<{
+      totalRaised: number;
+      totalDonors: number;
+      totalProjects: number;
+      transparencyScore: number;
+    }, void>({
+      query: () => '/donations/stats',
       providesTags: ['Donation'],
     }),
     createDonation: builder.mutation<Donation, CreateDonationDto>({
@@ -73,4 +82,5 @@ export const {
   useGetUserDonationsQuery,
   useGetOrganizationDonationsQuery,
   useGetOrganizationStatsQuery,
+  useGetDonationStatsQuery,
 } = donationsApiSlice;

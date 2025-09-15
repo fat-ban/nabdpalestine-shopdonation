@@ -1,37 +1,31 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
-  Query,
-  Body,
-  ParseIntPipe,
-  UseGuards,
-  BadRequestException,
-  Patch,
-  UseInterceptors,
-  UploadedFile,
-  UploadedFiles,
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Put,
+    Query,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CurrentUser } from 'src/users/decorator/current-user.decorator';
+import { Roles } from 'src/users/decorator/user-role.decorator';
+import { AuthRolesGuard } from 'src/users/guards/auth-role.guard';
+import { AuthGuard } from 'src/users/guards/auth.guard';
+import { ProductStatus, UserRole } from 'src/utils/enums';
+import { JWT_PAYLOAD } from 'src/utils/type';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Roles } from 'src/users/decorator/user-role.decorator';
-import { ProductStatus, UserRole } from 'src/utils/enums';
-import { AuthRolesGuard } from 'src/users/guards/auth-role.guard';
-import { JWT_PAYLOAD } from 'src/utils/type';
-import { CurrentUser } from 'src/users/decorator/current-user.decorator';
 import { Product } from './entities/product.entity';
-import { AuthGuard } from 'src/users/guards/auth.guard';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import {
-  //ReorderImagesDto,
-  UpdateMainImageDto,
-  UploadProductImageDto,
-} from './dto/upload-image.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { ProductsService } from './products.service';
 
 @Controller('api/products')
 export class ProductsController {
@@ -156,7 +150,7 @@ export class ProductsController {
     @Query('limit') limit?: number,
     @Query('category') category?: number,
     @Query('organization') organization?: number,
-    //@Query('seller') seller?: string,
+    @Query('seller') seller?: string,
     @Query('isActive') isActive?: boolean,
     @Query('isApproved') isApproved?: boolean,
     @Query('approvalStatus') approvalStatus?: ProductStatus,
@@ -168,7 +162,7 @@ export class ProductsController {
       limit,
       category,
       organization,
-      //seller,
+      seller,
       isActive,
       isApproved,
       approvalStatus,

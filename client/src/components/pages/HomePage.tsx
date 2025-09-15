@@ -6,7 +6,7 @@ import { Badge } from '../ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { OrganizationsSection } from '../OrganizationsSection';
-import designImage from '../../assets/flux-image.com_empowering-healthy-eating--palestinian-flag-with-groceries-for-nutrition-awareness.png';
+import designImage from 'figma:asset/9348bf6f11d07ddafe7fcf9f3df0c8172ec9fdb1.png';
 
 interface HomePageProps {
   onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'organizations' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'product-detail' | 'admin-dashboard' | 'user-account' | 'cart') => void;

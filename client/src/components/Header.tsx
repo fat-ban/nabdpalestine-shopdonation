@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sun, Moon, Globe, User, LogOut, Settings, ShoppingBag, Bell, Menu, X, Shield, CreditCard } from 'lucide-react';
+import { Heart, Sun, Moon, Globe, User, LogOut, Settings, ShoppingBag, Bell, Menu, X, Shield, CreditCard } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -8,7 +8,8 @@ import { useAuth } from './contexts/AuthContext';
 import { useCart } from './contexts/CartContext';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { NotificationCenter } from './NotificationCenter';
-import logo from '../assets/logo.png';
+import { NavLink, LinkButton } from './LinkButton';
+import designImage from 'figma:asset/9348bf6f11d07ddafe7fcf9f3df0c8172ec9fdb1.png';
 
 interface HeaderProps {
   currentPage: string;
@@ -39,48 +40,46 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-palestine-black shadow-sm border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <button
+            <LinkButton
               onClick={() => onNavigate('home')}
-              className="flex items-center space-x-3 rtl:space-x-reverse hover:opacity-80 transition-opacity"
+              className="flex items-center space-x-3 rtl:space-x-reverse hover:opacity-80 transition-opacity p-0 h-auto"
+              variant="ghost"
+              scrollToTop={true}
+              aria-label={language === 'ar' ? 'العودة إلى الصفحة الرئيسية' : 'Go to homepage'}
             >
-              <div className="w-12 h-12 flex items-center justify-center">
-                <img
-                  src={logo}
-                  alt="Palestine Pulse Logo"
-                  className="h-10 w-10 logo-clean"
-                />
+              <div className="w-10 h-10 bg-palestine-green rounded-lg flex items-center justify-center">
+                <Heart className="h-6 w-6 text-white" />
               </div>
               <div className="hidden md:block">
-                <h1 className="text-2xl font-bold text-palestine-green">
+                <h1 className="text-xl font-bold text-palestine-green">
                   {language === 'ar' ? 'نبض فلسطين' : 'Palestine Pulse'}
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {language === 'ar' ? 'منصة التضامن الرقمية' : 'Digital Solidarity Platform'}
                 </p>
               </div>
-            </button>
+            </LinkButton>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8 rtl:space-x-reverse">
             {navItems.map((item) => (
-              <button
+              <NavLink
                 key={item.key}
-                onClick={() => onNavigate(item.key as any)}
-                className={`relative text-base font-medium transition-colors hover:text-palestine-green ${
-                  currentPage === item.key
-                    ? 'text-palestine-green'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}
+                to={item.key}
+                onNavigate={onNavigate}
+                isActive={currentPage === item.key}
+                className="text-sm font-medium text-muted-foreground hover:text-palestine-green"
+                activeClassName="text-palestine-green"
+                scrollToTop={true}
+                smoothScroll={true}
+                aria-label={`${language === 'ar' ? 'الانتقال إلى' : 'Navigate to'} ${language === 'ar' ? item.labelAr : item.labelEn}`}
               >
                 {language === 'ar' ? item.labelAr : item.labelEn}
-                {currentPage === item.key && (
-                  <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-palestine-green rounded-full" />
-                )}
-              </button>
+              </NavLink>
             ))}
           </nav>
 
@@ -118,8 +117,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               className="h-9 w-9 p-0 relative"
             >
               <Bell className="h-4 w-4" />
-              <Badge
-                variant="destructive"
+              <Badge 
+                variant="destructive" 
                 className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-palestine-red animate-pulse"
               >
                 2
@@ -127,22 +126,24 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             </Button>
 
             {/* Shopping Cart */}
-            <Button
+            <LinkButton
               variant="ghost"
               size="sm"
               onClick={() => onNavigate('cart')}
               className="h-9 w-9 p-0 relative"
+              scrollToTop={true}
+              aria-label={`${language === 'ar' ? 'سلة التسوق' : 'Shopping cart'} ${getCartItemsCount() > 0 ? `(${getCartItemsCount()} ${language === 'ar' ? 'عنصر' : 'items'})` : ''}`}
             >
               <ShoppingBag className="h-4 w-4" />
               {getCartItemsCount() > 0 && (
-                <Badge
-                  variant="destructive"
+                <Badge 
+                  variant="destructive" 
                   className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-palestine-red"
                 >
                   {getCartItemsCount()}
                 </Badge>
               )}
-            </Button>
+            </LinkButton>
 
             {/* User Menu */}
             {user ? (
@@ -180,20 +181,24 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               </DropdownMenu>
             ) : (
               <div className="hidden md:flex items-center space-x-2 rtl:space-x-reverse">
-                <Button
+                <LinkButton
                   variant="ghost"
                   size="sm"
                   onClick={() => onNavigate('login')}
+                  scrollToTop={true}
+                  aria-label={language === 'ar' ? 'تسجيل الدخول' : 'Login'}
                 >
                   {language === 'ar' ? 'دخول' : 'Login'}
-                </Button>
-                <Button
+                </LinkButton>
+                <LinkButton
                   size="sm"
                   onClick={() => onNavigate('register')}
                   className="bg-palestine-green hover:bg-palestine-green-dark"
+                  scrollToTop={true}
+                  aria-label={language === 'ar' ? 'انضم إلينا' : 'Join Us'}
                 >
                   {language === 'ar' ? 'انضم إلينا' : 'Join Us'}
-                </Button>
+                </LinkButton>
               </div>
             )}
 
@@ -218,22 +223,25 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           <div className="lg:hidden py-4 border-t border-border">
             <nav className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <button
+                <NavLink
                   key={item.key}
-                  onClick={() => {
-                    onNavigate(item.key as any);
+                  to={item.key}
+                  onNavigate={(page) => {
+                    onNavigate(page as any);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`text-left text-base font-medium transition-colors hover:text-palestine-green ${
-                    currentPage === item.key
-                      ? 'text-palestine-green'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
+                  isActive={currentPage === item.key}
+                  className="text-left text-sm font-medium text-muted-foreground hover:text-palestine-green"
+                  activeClassName="text-palestine-green"
+                  scrollToTop={true}
+                  smoothScroll={true}
+                  variant="ghost"
+                  size="sm"
                 >
                   {language === 'ar' ? item.labelAr : item.labelEn}
-                </button>
+                </NavLink>
               ))}
-
+              
               <div className="flex items-center space-x-4 rtl:space-x-reverse pt-4 border-t border-border">
                 <Button
                   variant="ghost"
@@ -265,27 +273,30 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   )}
                 </Button>
               </div>
-
+              
               {!user && (
                 <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                  <Button
+                  <LinkButton
                     variant="ghost"
                     onClick={() => {
                       onNavigate('login');
                       setIsMobileMenuOpen(false);
                     }}
+                    scrollToTop={true}
+                    className="justify-start"
                   >
                     {language === 'ar' ? 'دخول' : 'Login'}
-                  </Button>
-                  <Button
+                  </LinkButton>
+                  <LinkButton
                     onClick={() => {
                       onNavigate('register');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="bg-palestine-green hover:bg-palestine-green-dark"
+                    className="bg-palestine-green hover:bg-palestine-green-dark justify-start"
+                    scrollToTop={true}
                   >
                     {language === 'ar' ? 'انضم إلينا' : 'Join Us'}
-                  </Button>
+                  </LinkButton>
                 </div>
               )}
             </nav>
@@ -294,7 +305,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       </div>
 
       {/* Notification Center */}
-      <NotificationCenter
+      <NotificationCenter 
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
       />
