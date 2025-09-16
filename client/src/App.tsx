@@ -7,7 +7,7 @@ import { Footer } from "./components/Footer";
 import { FloatingChatBot } from "./components/FloatingChatBot";
 import { Toaster } from "./components/ui/sonner";
 import { LoadingSpinner } from "./components/LoadingSpinner";
-import ErrorBoundary from "./components/ErrorBoundary";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 import { Role } from "./features/users/types";
 
@@ -23,11 +23,11 @@ const SupportPage = lazy(() => import("./components/pages/SupportPage").then(mod
 const LoginPage = lazy(() => import("./components/pages/LoginPage").then(module => ({ default: module.LoginPage })));
 const RegisterPage = lazy(() => import("./components/pages/RegisterPage").then(module => ({ default: module.RegisterPage })));
 const DashboardPage = lazy(() => import("./components/pages/DashboardPage").then(module => ({ default: module.DashboardPage })));
-const ProfilePage = lazy(() => import("./components/pages/ProfilePage").then(module => ({ default: module.ProfilePage })));
 const AdminDashboardPage = lazy(() => import("./components/pages/AdminDashboardPage").then(module => ({ default: module.AdminDashboardPage })));
 const UserAccountPage = lazy(() => import("./components/pages/UserAccountPage").then(module => ({ default: module.UserAccountPage })));
 const CartPage = lazy(() => import("./components/pages/CartPage").then(module => ({ default: module.CartPage })));
 const UserProfile = lazy(() => import("./features/users/components/UserProfile"));
+const UnauthorizedPage = lazy(() => import("./components/pages/UnauthorizedPage").then(module => ({ default: module.UnauthorizedPage })));
 
 export type PageType =
   | "home"
@@ -45,7 +45,8 @@ export type PageType =
   | "admin-dashboard"
   | "user-account"
   | "cart"
-  | "user-profile";
+  | "user-profile"
+  | "unauthorized";
 
 interface AppState {
   currentPage: PageType;
@@ -67,6 +68,8 @@ const MINIMAL_LAYOUT_PAGES: PageType[] = [
   "register",
   "product-detail",
   "user-account",
+  "admin-dashboard",
+  "unauthorized"
 ];
 
 // Pages that should hide only the floating chat
@@ -153,17 +156,19 @@ export default function App() {
       case "register":
         return <RegisterPage {...pageProps} />;
       case "dashboard":
-        return <DashboardPage {...pageProps} />;
+        return <ProtectedRoute roles={[Role.Admin]} onNavigate={handleNavigate}><DashboardPage {...pageProps} /></ProtectedRoute>;
       case "profile":
-        return <ProfilePage {...pageProps} />;
+        return <ProtectedRoute roles={[Role.User]} onNavigate={handleNavigate}><UserAccountPage {...pageProps} /></ProtectedRoute>;
       case "admin-dashboard":
-        return <AdminDashboardPage {...pageProps} />;
+        return <ProtectedRoute roles={[Role.Admin]} onNavigate={handleNavigate}><AdminDashboardPage {...pageProps} /></ProtectedRoute>;
       case "user-account":
-        return <UserAccountPage {...pageProps} />;
+        return <ProtectedRoute roles={[Role.User, Role.Admin]} onNavigate={handleNavigate}><UserAccountPage {...pageProps} /></ProtectedRoute>;
       case "cart":
         return <CartPage {...pageProps} />;
       case "user-profile":
-        return <ProtectedRoute roles={[Role.User]}><UserProfile /></ProtectedRoute>;
+        return <ProtectedRoute roles={[Role.User]} onNavigate={handleNavigate}><UserProfile /></ProtectedRoute>;
+      case "unauthorized":
+        return <UnauthorizedPage {...pageProps} />;
       default:
         return <HomePage {...pageProps} />;
     }

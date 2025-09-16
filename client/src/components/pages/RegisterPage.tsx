@@ -9,7 +9,7 @@ import { Checkbox } from '../ui/checkbox';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import logoImage from 'figma:asset/bb1259a3c4dfb04d8d03c587099db057050bb68a.png';
+import logoImage from '../../assets/logo.png';
 
 interface RegisterPageProps {
   onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'news' | 'support' | 'login' | 'register' | 'dashboard' | 'profile') => void;

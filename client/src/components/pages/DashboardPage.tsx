@@ -24,7 +24,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface DashboardPageProps {
-  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'news' | 'support' | 'login' | 'register' | 'dashboard' | 'profile') => void;
+  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'news' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'user-account') => void;
 }
 
 export function DashboardPage({ onNavigate }: DashboardPageProps) {
@@ -159,9 +159,9 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 {language === 'ar' ? 'الإشعارات' : 'Notifications'}
                 <Badge variant="destructive" className="ml-2">5</Badge>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => onNavigate('profile')}>
-                <Settings className="h-4 w-4 mr-2" />
-                {language === 'ar' ? 'الإعدادات' : 'Settings'}
+              <Button variant="outline" size="sm" onClick={() => onNavigate('user-account')}>
+                <Users className="h-4 w-4 mr-2" />
+                {language === 'ar' ? 'حسابي' : 'My Account'}
               </Button>
             </div>
           </div>

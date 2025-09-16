@@ -1,235 +1,161 @@
-import { useState } from 'react';
-import { Heart, ShoppingBag, Calendar, TrendingUp, Download, Eye, CheckCircle, Clock, MapPin, Package, CreditCard, Gift, Star, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { 
+  User, 
+  Mail, 
+  MapPin, 
+  Calendar, 
+  Heart, 
+  ShoppingBag, 
+  Edit, 
+  Save, 
+  X,
+  Camera,
+  Award,
+  TrendingUp
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
-import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface UserAccountPageProps {
-  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'organizations' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'product-detail' | 'admin-dashboard' | 'user-account' | 'cart') => void;
+  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'news' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'user-account') => void;
 }
 
 export function UserAccountPage({ onNavigate }: UserAccountPageProps) {
   const { language } = useTheme();
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const { user, updateProfile, logout } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState(user);
 
-  // Mock user data - in real app this would come from API
-  const userStats = {
-    totalDonations: 750,
-    totalPurchases: 1250,
-    donationCount: 12,
-    purchaseCount: 8,
-    memberSince: '2024-01-15',
-    impactScore: 95,
-    donationGoal: 1000,
-    loyaltyPoints: 2840
-  };
-
-  const donationHistory = [
-    {
-      id: 1,
-      amount: 100,
-      currency: 'USD',
-      project: 'دعم الأطفال',
-      projectEn: 'Child Support',
-      date: '2024-01-15',
-      status: 'completed',
-      impact: 'تم توفير وجبات لـ 25 طفل',
-      impactEn: 'Provided meals for 25 children',
-      receipt: 'RC001234'
-    },
-    {
-      id: 2,
-      amount: 75,
-      currency: 'USD',
-      project: 'إعادة الإعمار',
-      projectEn: 'Reconstruction',
-      date: '2024-01-10',
-      status: 'completed',
-      impact: 'ساهم في بناء 3 غرف دراسية',
-      impactEn: 'Contributed to building 3 classrooms',
-      receipt: 'RC001235'
-    },
-    {
-      id: 3,
-      amount: 150,
-      currency: 'USD',
-      project: 'التعليم',
-      projectEn: 'Education',
-      date: '2024-01-05',
-      status: 'completed',
-      impact: 'دعم 5 طلاب بالكتب والأدوات',
-      impactEn: 'Supported 5 students with books and supplies',
-      receipt: 'RC001236'
-    },
-    {
-      id: 4,
-      amount: 200,
-      currency: 'USD',
-      project: 'الصحة',
-      projectEn: 'Healthcare',
-      date: '2023-12-28',
-      status: 'completed',
-      impact: 'تمويل 40 استشارة طبية',
-      impactEn: 'Funded 40 medical consultations',
-      receipt: 'RC001237'
-    },
-    {
-      id: 5,
-      amount: 50,
-      currency: 'USD',
-      project: 'الطوارئ',
-      projectEn: 'Emergency',
-      date: '2023-12-20',
-      status: 'processing',
-      impact: 'قيد المعالجة',
-      impactEn: 'Processing',
-      receipt: 'RC001238'
-    }
-  ];
-
-  const purchaseHistory = [
-    {
-      id: 1,
-      orderNumber: 'ORD-2024-001',
-      products: [
-        { name: 'كوفية فلسطينية أصلية', nameEn: 'Authentic Palestinian Keffiyeh', quantity: 2, price: 45 }
-      ],
-      total: 90,
-      date: '2024-01-12',
-      status: 'delivered',
-      tracking: 'TRK123456789'
-    },
-    {
-      id: 2,
-      orderNumber: 'ORD-2024-002',
-      products: [
-        { name: 'زيت زيتون فلسطيني', nameEn: 'Palestinian Olive Oil', quantity: 3, price: 25 },
-        { name: 'صابون زيت الزيتون', nameEn: 'Olive Oil Soap', quantity: 5, price: 12 }
-      ],
-      total: 135,
-      date: '2024-01-08',
-      status: 'shipped',
-      tracking: 'TRK123456790'
-    },
-    {
-      id: 3,
-      orderNumber: 'ORD-2024-003',
-      products: [
-        { name: 'تطريز فلسطيني يدوي', nameEn: 'Handmade Palestinian Embroidery', quantity: 1, price: 85 }
-      ],
-      total: 85,
-      date: '2024-01-03',
-      status: 'delivered',
-      tracking: 'TRK123456791'
-    }
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': case 'delivered': return 'bg-palestine-green text-white';
-      case 'processing': case 'shipped': return 'bg-yellow-500 text-white';
-      case 'pending': return 'bg-orange-500 text-white';
-      case 'cancelled': return 'bg-palestine-red text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    const statusTexts = {
-      completed: { ar: 'مكتمل', en: 'Completed' },
-      delivered: { ar: 'تم التسليم', en: 'Delivered' },
-      shipped: { ar: 'قيد الشحن', en: 'Shipped' },
-      processing: { ar: 'قيد المعالجة', en: 'Processing' },
-      pending: { ar: 'معلق', en: 'Pending' },
-      cancelled: { ar: 'ملغي', en: 'Cancelled' }
-    };
-    return language === 'ar' ? statusTexts[status as keyof typeof statusTexts]?.ar || status : statusTexts[status as keyof typeof statusTexts]?.en || status;
-  };
-
-  const impactAchievements = [
-    {
-      title: language === 'ar' ? 'متبرع ذهبي' : 'Gold Donor',
-      description: language === 'ar' ? 'تبرع بأكثر من $500' : 'Donated over $500',
-      icon: <Gift className="h-6 w-6 text-yellow-500" />,
-      achieved: true
-    },
-    {
-      title: language === 'ar' ? 'مؤثر اجتماعي' : 'Social Impact',
-      description: language === 'ar' ? 'ساعد أكثر من 100 شخص' : 'Helped over 100 people',
-      icon: <Heart className="h-6 w-6 text-palestine-red" />,
-      achieved: true
-    },
-    {
-      title: language === 'ar' ? 'عضو مخلص' : 'Loyal Member',
-      description: language === 'ar' ? 'عضو لأكثر من سنة' : 'Member for over a year',
-      icon: <Star className="h-6 w-6 text-palestine-green" />,
-      achieved: false
-    }
-  ];
+  useEffect(() => {
+    setEditedUser(user);
+  }, [user]);
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-palestine-green-50 to-palestine-red-50 dark:from-palestine-black dark:to-palestine-black-light">
-        <Card className="max-w-md mx-auto shadow-lg border-0">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 bg-palestine-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="h-8 w-8 text-palestine-red" />
-            </div>
-            <h2 className="text-xl font-bold mb-2">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md mx-4">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">
               {language === 'ar' ? 'تسجيل الدخول مطلوب' : 'Login Required'}
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              {language === 'ar' ? 'يجب تسجيل الدخول لمراجعة حسابك' : 'Please login to view your account'}
-            </p>
-            <div className="space-y-3">
-              <Button onClick={() => onNavigate('login')} className="w-full bg-palestine-green hover:bg-palestine-green-dark">
-                {language === 'ar' ? 'تسجيل الدخول' : 'Login'}
-              </Button>
-              <Button variant="outline" onClick={() => onNavigate('home')} className="w-full">
-                {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
-              </Button>
-            </div>
+            </CardTitle>
+            <CardDescription>
+              {language === 'ar' 
+                ? 'يجب تسجيل الدخول للوصول إلى صفحة الملف الشخصي'
+                : 'Please login to access your profile page'
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={() => onNavigate('login')} 
+              className="w-full bg-palestine-red hover:bg-palestine-red-dark"
+            >
+              {language === 'ar' ? 'تسجيل الدخول' : 'Login'}
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => onNavigate('home')} 
+              className="w-full"
+            >
+              {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  const handleSave = () => {
+    if (editedUser) {
+      updateProfile(editedUser);
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedUser(user);
+    setIsEditing(false);
+  };
+
+  const donations = [
+    {
+      id: 1,
+      amount: 250,
+      date: '2024-01-15',
+      cause: language === 'ar' ? 'دعم التعليم' : 'Education Support'
+    },
+    {
+      id: 2,
+      amount: 150,
+      date: '2024-01-10',
+      cause: language === 'ar' ? 'مساعدات طبية' : 'Medical Aid'
+    },
+    {
+      id: 3,
+      amount: 300,
+      date: '2024-01-05',
+      cause: language === 'ar' ? 'إغاثة عاجلة' : 'Emergency Relief'
+    }
+  ];
+
+  const purchases = [
+    {
+      id: 1,
+      product: language === 'ar' ? 'خزفيات تراثية' : 'Traditional Pottery',
+      amount: 85,
+      date: '2024-01-12'
+    },
+    {
+      id: 2,
+      product: language === 'ar' ? 'تطريز فلسطيني' : 'Palestinian Embroidery',
+      amount: 120,
+      date: '2024-01-08'
+    }
+  ];
+
+  const achievements = [
+    {
+      title: language === 'ar' ? 'متضامن ذهبي' : 'Gold Supporter',
+      description: language === 'ar' ? 'تبرع بأكثر من $1000' : 'Donated over $1000',
+      icon: Award,
+      color: 'text-yellow-500'
+    },
+    {
+      title: language === 'ar' ? 'صديق المتجر' : 'Store Friend',
+      description: language === 'ar' ? 'اشترى أكثر من 10 منتجات' : 'Purchased over 10 products',
+      icon: ShoppingBag,
+      color: 'text-palestine-green'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-palestine-green-50 to-palestine-red-50 dark:from-palestine-black dark:to-palestine-black-light">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white dark:bg-palestine-black border-b border-border shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <Button
-                variant="ghost"
-                onClick={() => onNavigate('home')}
-                className="text-muted-foreground hover:text-foreground"
+      <div className="bg-card border-b border-border">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-foreground">
+              {language === 'ar' ? 'حسابي' : 'My Account'}
+            </h1>
+            <div className="flex gap-2">
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={() => {
+                  logout();
+                  onNavigate('home');
+                }}
               >
-                ← {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
-              </Button>
-              <div className="h-6 w-px bg-border"></div>
-              <h1 className="text-2xl font-bold text-palestine-green">
-                {language === 'ar' ? 'حسابي' : 'My Account'}
-              </h1>
-            </div>
-            
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                {language === 'ar' ? 'تصدير البيانات' : 'Export Data'}
-              </Button>
-              <Button onClick={() => onNavigate('profile')} className="bg-palestine-green hover:bg-palestine-green-dark">
-                {language === 'ar' ? 'تعديل الملف الشخصي' : 'Edit Profile'}
+                {language === 'ar' ? 'تسجيل الخروج' : 'Logout'}
               </Button>
             </div>
           </div>
@@ -237,472 +163,300 @@ export function UserAccountPage({ onNavigate }: UserAccountPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* User Profile Header */}
-        <Card className="mb-8 shadow-lg border-0 bg-gradient-to-r from-palestine-green to-palestine-red text-white">
-          <CardContent className="p-8">
-            <div className="flex items-center space-x-6 rtl:space-x-reverse">
-              <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
-                <AvatarImage src="" />
-                <AvatarFallback className="text-2xl bg-white text-palestine-green">
-                  {user.name?.charAt(0) || user.email.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold mb-2">{user.name || user.email}</h2>
-                <p className="text-white/90 mb-4">
-                  {language === 'ar' ? `عضو منذ ${userStats.memberSince}` : `Member since ${userStats.memberSince}`}
-                </p>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">${userStats.totalDonations}</div>
-                    <div className="text-sm text-white/80">{language === 'ar' ? 'إجمالي التبرعات' : 'Total Donations'}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">${userStats.totalPurchases}</div>
-                    <div className="text-sm text-white/80">{language === 'ar' ? 'إجمالي المشتريات' : 'Total Purchases'}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{userStats.impactScore}%</div>
-                    <div className="text-sm text-white/80">{language === 'ar' ? 'نقاط التأثير' : 'Impact Score'}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{userStats.loyaltyPoints}</div>
-                    <div className="text-sm text-white/80">{language === 'ar' ? 'نقاط الولاء' : 'Loyalty Points'}</div>
-                  </div>
-                </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Profile Info Card */}
+          <div className="lg:col-span-1">
+            <Card className="relative overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <ImageWithFallback 
+                  src="https://images.unsplash.com/photo-1589652715594-9daf0fc98d49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMGF2YXRhciUyMHBlcnNvbiUyMHBhbGVzdGluZXxlbnwxfHx8fDE3NTc1NDUyMzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  alt="Profile Background"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-palestine-red/20 to-palestine-green/20"></div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 h-auto p-1 bg-white dark:bg-palestine-black-light shadow-lg">
-            <TabsTrigger 
-              value="overview" 
-              className="flex items-center space-x-2 rtl:space-x-reverse data-[state=active]:bg-palestine-green data-[state=active]:text-white"
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span>{language === 'ar' ? 'نظرة عامة' : 'Overview'}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="donations" 
-              className="flex items-center space-x-2 rtl:space-x-reverse data-[state=active]:bg-palestine-red data-[state=active]:text-white"
-            >
-              <Heart className="h-4 w-4" />
-              <span>{language === 'ar' ? 'التبرعات' : 'Donations'}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="purchases" 
-              className="flex items-center space-x-2 rtl:space-x-reverse data-[state=active]:bg-blue-500 data-[state=active]:text-white"
-            >
-              <ShoppingBag className="h-4 w-4" />
-              <span>{language === 'ar' ? 'المشتريات' : 'Purchases'}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="impact" 
-              className="flex items-center space-x-2 rtl:space-x-reverse data-[state=active]:bg-yellow-500 data-[state=active]:text-white"
-            >
-              <Star className="h-4 w-4" />
-              <span>{language === 'ar' ? 'التأثير' : 'Impact'}</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Donation Progress */}
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-palestine-red to-red-500 text-white">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Heart className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'هدف التبرع' : 'Donation Goal'}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-palestine-red">${userStats.totalDonations}</span>
-                      <span className="text-muted-foreground">/ ${userStats.donationGoal}</span>
-                    </div>
-                    <Progress value={(userStats.totalDonations / userStats.donationGoal) * 100} className="h-3" />
-                    <p className="text-sm text-muted-foreground">
-                      {language === 'ar' 
-                        ? `${userStats.donationGoal - userStats.totalDonations} دولار متبقي لتحقيق الهدف`
-                        : `$${userStats.donationGoal - userStats.totalDonations} remaining to reach goal`
+              <CardHeader className="text-center relative z-10">
+                <div className="relative inline-block">
+                  <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-palestine-red/20">
+                    <AvatarImage src={user.avatar} />
+                    <AvatarFallback className="bg-palestine-red text-white text-2xl">
+                      {user.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute bottom-0 right-0 rounded-full p-2 h-8 w-8"
+                  >
+                    <Camera className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <Input
+                      value={editedUser?.name || ''}
+                      onChange={(e) => setEditedUser(prev => prev ? {...prev, name: e.target.value} : null)}
+                      className="text-center"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <CardTitle className="text-xl mb-2">{user.name}</CardTitle>
+                    <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
+                      {user.role === 'admin' 
+                        ? (language === 'ar' ? 'مدير' : 'Admin') 
+                        : (language === 'ar' ? 'عضو' : 'Member')
                       }
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-palestine-green to-green-500 text-white">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Calendar className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'النشاط الأخير' : 'Recent Activity'}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <div className="w-2 h-2 bg-palestine-red rounded-full"></div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {language === 'ar' ? 'تبرع بـ $100 لدعم الأطفال' : 'Donated $100 for Child Support'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">2024-01-15</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {language === 'ar' ? 'تم شراء كوفية فلسطينية' : 'Purchased Palestinian Keffiyeh'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">2024-01-12</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <div className="w-2 h-2 bg-palestine-green rounded-full"></div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {language === 'ar' ? 'تبرع بـ $75 لإعادة الإعمار' : 'Donated $75 for Reconstruction'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">2024-01-10</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Quick Stats */}
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'إحصائيات سريعة' : 'Quick Stats'}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{language === 'ar' ? 'عدد التبرعات' : 'Donations Count'}</span>
-                      <span className="font-bold">{userStats.donationCount}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{language === 'ar' ? 'عدد المشتريات' : 'Purchases Count'}</span>
-                      <span className="font-bold">{userStats.purchaseCount}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{language === 'ar' ? 'متوسط التبرع' : 'Avg Donation'}</span>
-                      <span className="font-bold">${Math.round(userStats.totalDonations / userStats.donationCount)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{language === 'ar' ? 'متوسط الشراء' : 'Avg Purchase'}</span>
-                      <span className="font-bold">${Math.round(userStats.totalPurchases / userStats.purchaseCount)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Donations Tab */}
-          <TabsContent value="donations" className="space-y-6">
-            {/* Donation Summary Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              <Card className="bg-gradient-to-br from-palestine-red to-red-500 text-white border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white/80 text-sm mb-1">{language === 'ar' ? 'إجمالي التبرعات' : 'Total Donated'}</p>
-                      <p className="text-3xl font-bold">${userStats.totalDonations}</p>
-                    </div>
-                    <Heart className="h-12 w-12 text-white/70" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-palestine-green to-green-500 text-white border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white/80 text-sm mb-1">{language === 'ar' ? 'عدد التبرعات' : 'Donations Count'}</p>
-                      <p className="text-3xl font-bold">{userStats.donationCount}</p>
-                    </div>
-                    <Gift className="h-12 w-12 text-white/70" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-yellow-500 to-orange-500 text-white border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white/80 text-sm mb-1">{language === 'ar' ? 'متوسط التبرع' : 'Average Donation'}</p>
-                      <p className="text-3xl font-bold">${Math.round(userStats.totalDonations / userStats.donationCount)}</p>
-                    </div>
-                    <TrendingUp className="h-12 w-12 text-white/70" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="shadow-lg border-0">
-              <CardHeader className="bg-gradient-to-r from-palestine-red to-red-500 text-white">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Heart className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'تاريخ التبرعات - الشفافية الكاملة' : 'Donation History - Full Transparency'}</span>
-                  </CardTitle>
-                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      {donationHistory.length} {language === 'ar' ? 'تبرع' : 'donations'}
                     </Badge>
-                    <Button variant="secondary" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      {language === 'ar' ? 'تصدير التبرعات' : 'Export Donations'}
+                  </div>
+                )}
+              </CardHeader>
+
+              <CardContent className="space-y-4 relative z-10">
+                <div className="space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4 mr-2" />
+                    {isEditing ? (
+                      <Input
+                        value={editedUser?.email || ''}
+                        onChange={(e) => setEditedUser(prev => prev ? {...prev, email: e.target.value} : null)}
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span>{user.email}</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {isEditing ? (
+                      <Input
+                        value={editedUser?.location || ''}
+                        onChange={(e) => setEditedUser(prev => prev ? {...prev, location: e.target.value} : null)}
+                        placeholder={language === 'ar' ? 'الموقع' : 'Location'}
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span>{user.location || (language === 'ar' ? 'غير محدد' : 'Not specified')}</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span>
+                      {language === 'ar' ? 'انضم في ' : 'Joined '}
+                      {new Date(user.joinedDate).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t">
+                  {isEditing ? (
+                    <div className="flex gap-2">
+                      <Button onClick={handleSave} size="sm" className="flex-1 bg-palestine-green hover:bg-palestine-green-dark">
+                        <Save className="h-3 w-3 mr-1" />
+                        {language === 'ar' ? 'حفظ' : 'Save'}
+                      </Button>
+                      <Button onClick={handleCancel} variant="outline" size="sm" className="flex-1">
+                        <X className="h-3 w-3 mr-1" />
+                        {language === 'ar' ? 'إلغاء' : 'Cancel'}
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={() => setIsEditing(true)} variant="outline" className="w-full">
+                      <Edit className="h-4 w-4 mr-2" />
+                      {language === 'ar' ? 'تعديل الملف' : 'Edit Profile'}
                     </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{language === 'ar' ? 'المبلغ' : 'Amount'}</TableHead>
-                        <TableHead>{language === 'ar' ? 'المشروع' : 'Project'}</TableHead>
-                        <TableHead>{language === 'ar' ? 'التاريخ' : 'Date'}</TableHead>
-                        <TableHead>{language === 'ar' ? 'الحالة' : 'Status'}</TableHead>
-                        <TableHead>{language === 'ar' ? 'التأثير' : 'Impact'}</TableHead>
-                        <TableHead>{language === 'ar' ? 'الإجراءات' : 'Actions'}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {donationHistory.map((donation) => (
-                        <TableRow key={donation.id}>
-                          <TableCell className="font-bold text-palestine-green">
-                            ${donation.amount} {donation.currency}
-                          </TableCell>
-                          <TableCell>
-                            {language === 'ar' ? donation.project : donation.projectEn}
-                          </TableCell>
-                          <TableCell>{donation.date}</TableCell>
-                          <TableCell>
-                            <Badge className={getStatusColor(donation.status)}>
-                              {getStatusText(donation.status)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="max-w-xs">
-                            <p className="text-sm text-muted-foreground truncate">
-                              {language === 'ar' ? donation.impact : donation.impactEn}
-                            </p>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <Download className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                {/* Transparency Section */}
-                <div className="mt-8 p-6 bg-gradient-to-r from-palestine-green-50 to-palestine-red-50 dark:from-palestine-green/10 dark:to-palestine-red/10 rounded-lg border border-border">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <CheckCircle className="h-5 w-5 text-palestine-green mr-2" />
-                    {language === 'ar' ? 'ضمان الشفافية' : 'Transparency Guarantee'}
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium mb-2">{language === 'ar' ? 'كيف نضمن الشفافية:' : 'How we ensure transparency:'}</h4>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li className="flex items-center">
-                          <div className="w-2 h-2 bg-palestine-green rounded-full mr-2"></div>
-                          {language === 'ar' ? 'تتبع مباشر لكل دولار متبرع به' : 'Direct tracking of every donated dollar'}
-                        </li>
-                        <li className="flex items-center">
-                          <div className="w-2 h-2 bg-palestine-green rounded-full mr-2"></div>
-                          {language === 'ar' ? 'تقارير شهرية مفصلة عن استخدام التبرعات' : 'Detailed monthly reports on donation usage'}
-                        </li>
-                        <li className="flex items-center">
-                          <div className="w-2 h-2 bg-palestine-green rounded-full mr-2"></div>
-                          {language === 'ar' ? 'صور ومقاطع فيديو من المشاريع الممولة' : 'Photos and videos from funded projects'}
-                        </li>
-                        <li className="flex items-center">
-                          <div className="w-2 h-2 bg-palestine-green rounded-full mr-2"></div>
-                          {language === 'ar' ? 'إيصالات رقمية لكل تبرع' : 'Digital receipts for every donation'}
-                        </li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">{language === 'ar' ? 'إحصائيات شفافيتك:' : 'Your transparency stats:'}</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">{language === 'ar' ? 'التبرعات المتتبعة' : 'Tracked Donations'}</span>
-                          <span className="font-bold">100%</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">{language === 'ar' ? 'الإيصالات المتاحة' : 'Available Receipts'}</span>
-                          <span className="font-bold">{donationHistory.filter(d => d.status === 'completed').length}/{donationHistory.length}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">{language === 'ar' ? 'تقارير التأثير' : 'Impact Reports'}</span>
-                          <span className="font-bold">{donationHistory.filter(d => d.status === 'completed').length}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          {/* Purchases Tab */}
-          <TabsContent value="purchases" className="space-y-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <ShoppingBag className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'تاريخ المشتريات' : 'Purchase History'}</span>
-                  </CardTitle>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {purchaseHistory.length} {language === 'ar' ? 'طلب' : 'orders'}
-                  </Badge>
-                </div>
+            {/* Stats Card */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-palestine-green" />
+                  {language === 'ar' ? 'إحصائيات شخصية' : 'Personal Stats'}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {purchaseHistory.map((order) => (
-                    <Card key={order.id} className="border border-border">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-4">
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {language === 'ar' ? 'إجمالي التبرعات' : 'Total Donations'}
+                  </span>
+                  <span className="font-bold text-palestine-green">
+                    ${user.donationTotal?.toLocaleString() || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {language === 'ar' ? 'إجمالي المشتريات' : 'Total Purchases'}
+                  </span>
+                  <span className="font-bold text-palestine-red">
+                    ${user.purchaseTotal?.toLocaleString() || 0}
+                  </span>
+                </div>
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      {language === 'ar' ? 'مستوى التضامن' : 'Solidarity Level'}
+                    </span>
+                    <span className="text-sm font-medium">75%</span>
+                  </div>
+                  <Progress value={75} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <Tabs defaultValue="activity" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="activity">
+                  {language === 'ar' ? 'النشاط' : 'Activity'}
+                </TabsTrigger>
+                <TabsTrigger value="donations">
+                  {language === 'ar' ? 'التبرعات' : 'Donations'}
+                </TabsTrigger>
+                <TabsTrigger value="achievements">
+                  {language === 'ar' ? 'الإنجازات' : 'Achievements'}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="activity" className="space-y-6">
+                {/* Recent Donations */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Heart className="h-5 w-5 mr-2 text-palestine-red" />
+                      {language === 'ar' ? 'التبرعات الأخيرة' : 'Recent Donations'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {donations.map((donation) => (
+                        <div key={donation.id} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                           <div>
-                            <h4 className="font-semibold">{order.orderNumber}</h4>
-                            <p className="text-sm text-muted-foreground">{order.date}</p>
+                            <p className="font-medium">{donation.cause}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(donation.date).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+                            </p>
                           </div>
-                          <div className="text-right">
-                            <div className="font-bold text-lg">${order.total}</div>
-                            <Badge className={getStatusColor(order.status)}>
-                              {getStatusText(order.status)}
-                            </Badge>
-                          </div>
+                          <span className="font-bold text-palestine-green">
+                            ${donation.amount}
+                          </span>
                         </div>
-                        
-                        <div className="space-y-2 mb-4">
-                          {order.products.map((product, index) => (
-                            <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                              <div>
-                                <span className="font-medium">
-                                  {language === 'ar' ? product.name : product.nameEn}
-                                </span>
-                                <span className="text-muted-foreground ml-2">x{product.quantity}</span>
-                              </div>
-                              <span className="font-medium">${product.price * product.quantity}</span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {order.tracking && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              {language === 'ar' ? 'رقم التتبع:' : 'Tracking:'} {order.tracking}
-                            </span>
-                            <Button variant="ghost" size="sm">
-                              {language === 'ar' ? 'تتبع الطلب' : 'Track Order'}
-                              <ArrowUpRight className="h-4 w-4 ml-1" />
-                            </Button>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Impact Tab */}
-          <TabsContent value="impact" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Star className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'إنجازات التأثير' : 'Impact Achievements'}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {impactAchievements.map((achievement, index) => (
-                      <div key={index} className={`flex items-center space-x-4 rtl:space-x-reverse p-4 rounded-lg border ${achievement.achieved ? 'bg-palestine-green/10 border-palestine-green/20' : 'bg-muted/50 border-border'}`}>
-                        <div className={`p-2 rounded-full ${achievement.achieved ? 'bg-palestine-green/20' : 'bg-muted'}`}>
-                          {achievement.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold">{achievement.title}</h4>
-                          <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                        </div>
-                        {achievement.achieved && (
-                          <CheckCircle className="h-5 w-5 text-palestine-green" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                  <CardTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>{language === 'ar' ? 'إحصائيات التأثير' : 'Impact Statistics'}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-palestine-green mb-2">{userStats.impactScore}%</div>
-                      <p className="text-muted-foreground">{language === 'ar' ? 'نقاط التأثير الإجمالية' : 'Total Impact Score'}</p>
+                      ))}
                     </div>
-                    
+                  </CardContent>
+                </Card>
+
+                {/* Recent Purchases */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <ShoppingBag className="h-5 w-5 mr-2 text-palestine-green" />
+                      {language === 'ar' ? 'المشتريات الأخيرة' : 'Recent Purchases'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {purchases.map((purchase) => (
+                        <div key={purchase.id} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                          <div>
+                            <p className="font-medium">{purchase.product}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(purchase.date).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+                            </p>
+                          </div>
+                          <span className="font-bold text-palestine-red">
+                            ${purchase.amount}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="donations" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === 'ar' ? 'سجل التبرعات' : 'Donation History'}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === 'ar' 
+                        ? 'جميع تبرعاتك مع تفاصيل الشفافية'
+                        : 'All your donations with transparency details'
+                      }
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{language === 'ar' ? 'الأشخاص المدعومون' : 'People Supported'}</span>
-                        <span className="font-bold">127</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{language === 'ar' ? 'الوجبات المقدمة' : 'Meals Provided'}</span>
-                        <span className="font-bold">85</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{language === 'ar' ? 'الطلاب المدعومون' : 'Students Supported'}</span>
-                        <span className="font-bold">12</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{language === 'ar' ? 'الاستشارات الطبية' : 'Medical Consultations'}</span>
-                        <span className="font-bold">40</span>
-                      </div>
+                      {donations.map((donation) => (
+                        <div key={donation.id} className="border border-border rounded-lg p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-medium">{donation.cause}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(donation.date).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+                              </p>
+                            </div>
+                            <span className="font-bold text-palestine-green text-lg">
+                              ${donation.amount}
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {language === 'ar' ? 'تم التأكيد' : 'Confirmed'}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="achievements" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === 'ar' ? 'شارات الإنجاز' : 'Achievement Badges'}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === 'ar' 
+                        ? 'إنجازاتك في دعم القضية الفلسطينية'
+                        : 'Your achievements in supporting the Palestinian cause'
+                      }
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {achievements.map((achievement, index) => (
+                        <div key={index} className="flex items-center p-4 border border-border rounded-lg">
+                          <div className={`p-3 rounded-full bg-muted mr-4 ${achievement.color}`}>
+                            <achievement.icon className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{achievement.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {achievement.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );

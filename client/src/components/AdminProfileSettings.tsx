@@ -12,7 +12,7 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { useTheme } from './contexts/ThemeContext';
 import { useAuth } from './contexts/AuthContext';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface AdminProfileSettingsProps {
   onClose: () => void;

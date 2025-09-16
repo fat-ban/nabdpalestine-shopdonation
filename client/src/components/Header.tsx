@@ -10,10 +10,11 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { NotificationCenter } from './NotificationCenter';
 import { NavLink, LinkButton } from './LinkButton';
 import designImage from 'figma:asset/9348bf6f11d07ddafe7fcf9f3df0c8172ec9fdb1.png';
+import { Role } from '../features/users/types';
 
 interface HeaderProps {
   currentPage: string;
-  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'organizations' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'product-detail' | 'admin-dashboard' | 'user-account' | 'cart') => void;
+  onNavigate: (page: 'home' | 'store' | 'donate' | 'chatbot' | 'about' | 'organizations' | 'support' | 'login' | 'register' | 'dashboard' | 'profile' | 'product-detail' | 'admin-dashboard' | 'user-account' | 'cart' | 'user-profile') => void;
 }
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
@@ -155,18 +156,10 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={() => onNavigate('user-account')}>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    {language === 'ar' ? 'حسابي' : 'My Account'}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onNavigate('profile')}>
                     <User className="mr-2 h-4 w-4" />
                     {language === 'ar' ? 'الملف الشخصي' : 'Profile'}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onNavigate('dashboard')}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    {language === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
-                  </DropdownMenuItem>
-                  {user?.email === 'admin@palestinepulse.org' && (
+                  {user?.role === Role.Admin && (
                     <DropdownMenuItem onClick={() => onNavigate('admin-dashboard')}>
                       <Shield className="mr-2 h-4 w-4" />
                       {language === 'ar' ? 'لوحة الإدارة' : 'Admin Panel'}
@@ -273,32 +266,74 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   )}
                 </Button>
               </div>
-              
-              {!user && (
-                <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                  <LinkButton
-                    variant="ghost"
-                    onClick={() => {
-                      onNavigate('login');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    scrollToTop={true}
-                    className="justify-start"
-                  >
-                    {language === 'ar' ? 'دخول' : 'Login'}
-                  </LinkButton>
-                  <LinkButton
-                    onClick={() => {
-                      onNavigate('register');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="bg-palestine-green hover:bg-palestine-green-dark justify-start"
-                    scrollToTop={true}
-                  >
-                    {language === 'ar' ? 'انضم إلينا' : 'Join Us'}
-                  </LinkButton>
-                </div>
-              )}
+              <div className="pt-4 border-t border-border">
+                {user ? (
+                  <div className="flex flex-col space-y-2">
+                    <LinkButton
+                      variant="ghost"
+                      onClick={() => {
+                        onNavigate('user-account');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      scrollToTop={true}
+                      className="justify-start"
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      {language === 'ar' ? 'الملف الشخصي' : 'Profile'}
+                    </LinkButton>
+                    {user?.role === Role.Admin && (
+                      <LinkButton
+                        variant="ghost"
+                        onClick={() => {
+                          onNavigate('admin-dashboard');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        scrollToTop={true}
+                        className="justify-start"
+                      >
+                        <Shield className="mr-2 h-4 w-4" />
+                        {language === 'ar' ? 'لوحة الإدارة' : 'Admin Panel'}
+                      </LinkButton>
+                    )}
+                    <LinkButton
+                      variant="ghost"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      scrollToTop={true}
+                      className="justify-start text-red-500 hover:text-red-600"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      {language === 'ar' ? 'تسجيل الخروج' : 'Logout'}
+                    </LinkButton>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    <LinkButton
+                      variant="ghost"
+                      onClick={() => {
+                        onNavigate('login');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      scrollToTop={true}
+                      className="justify-start"
+                    >
+                      {language === 'ar' ? 'دخول' : 'Login'}
+                    </LinkButton>
+                    <LinkButton
+                      onClick={() => {
+                        onNavigate('register');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="bg-palestine-green hover:bg-palestine-green-dark justify-start"
+                      scrollToTop={true}
+                    >
+                      {language === 'ar' ? 'انضم إلينا' : 'Join Us'}
+                    </LinkButton>
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
         )}

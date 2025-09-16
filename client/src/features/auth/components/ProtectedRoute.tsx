@@ -16,12 +16,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, roles, onNavi
     return null;
   }
 
-  if (roles && roles.length > 0 && (!user || !roles.some(role => user.roles.includes(role)))) {
+  if (roles && roles.length > 0 && (!user || !roles.includes(user.role))) {
     onNavigate('unauthorized');
     return null;
   }
 
-  return children;
+  return React.cloneElement(children, { onNavigate });
 };
 
 export default ProtectedRoute;

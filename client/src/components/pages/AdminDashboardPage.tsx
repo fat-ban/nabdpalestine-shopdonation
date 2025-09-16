@@ -41,10 +41,10 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
   };
 
   const recentUsers = [
-    { id: 1, name: 'أحمد محمد', nameEn: 'Ahmed Mohammed', email: 'ahmed@example.com', location: 'رام الله', locationEn: 'Ramallah', status: 'active', joinDate: '2024-01-15', donations: 250 },
-    { id: 2, name: 'فاطمة علي', nameEn: 'Fatima Ali', email: 'fatima@example.com', location: 'غزة', locationEn: 'Gaza', status: 'active', joinDate: '2024-01-14', donations: 150 },
-    { id: 3, name: 'محمد حسن', nameEn: 'Mohammed Hassan', email: 'mohammed@example.com', location: 'القدس', locationEn: 'Jerusalem', status: 'pending', joinDate: '2024-01-13', donations: 0 },
-    { id: 4, name: 'عائشة أحمد', nameEn: 'Aisha Ahmed', email: 'aisha@example.com', location: 'نابلس', locationEn: 'Nablus', status: 'active', joinDate: '2024-01-12', donations: 300 },
+    { id: 1, name: 'أحمد محمد', nameEn: 'Ahmed Mohammed', email: 'ahmed@example.com', location: ' العاصمةالجزائر', locationEn: 'algeria', status: 'active', joinDate: '2024-01-15', donations: 250 },
+    { id: 2, name: 'فاطمة علي', nameEn: 'Fatima Ali', email: 'fatima@example.com', location: 'تيبازة', locationEn: 'Tunisia', status: 'active', joinDate: '2024-01-14', donations: 150 },
+    { id: 3, name: 'محمد حسن', nameEn: 'Mohammed Hassan', email: 'mohammed@example.com', location: 'مستغانم', locationEn: 'Libya', status: 'pending', joinDate: '2024-01-13', donations: 0 },
+    { id: 4, name: 'عائشة أحمد', nameEn: 'Aisha Ahmed', email: 'aisha@example.com', location: 'البليدة', locationEn: 'Nablus', status: 'active', joinDate: '2024-01-12', donations: 300 },
     { id: 5, name: 'يوسف عبدالله', nameEn: 'Youssef Abdullah', email: 'youssef@example.com', location: 'الخليل', locationEn: 'Hebron', status: 'suspended', joinDate: '2024-01-11', donations: 75 }
   ];
 

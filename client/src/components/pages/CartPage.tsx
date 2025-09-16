@@ -14,40 +14,29 @@ interface CartPageProps {
 
 export function CartPage({ onNavigate }: CartPageProps) {
   const { language } = useTheme();
-  const { cartItems = [], updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
-  // Create items alias for backward compatibility
-  const items = cartItems;
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Add loading state for when cart is initializing
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if cart is loaded
   useEffect(() => {
-    // Simple timeout to ensure cart context is initialized
-    const timer = setTimeout(() => {
+    if (cartItems !== undefined) {
       setIsLoading(false);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, [cartItems]);
 
   const handleCheckout = async () => {
     setIsProcessing(true);
-    // محاكاة عملية الدفع
     await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsProcessing(false);
-    // في التطبيق الحقيقي، ستتم عملية الدفع هنا
     alert(language === 'ar' ? 'تم الطلب بنجاح!' : 'Order placed successfully!');
     clearCart();
     onNavigate('store');
+    setIsProcessing(false);
   };
 
   const cartTotal = getCartTotal ? getCartTotal() : 0;
   const shippingCost = cartTotal > 100 ? 0 : 10;
   const totalWithShipping = cartTotal + shippingCost;
 
-  // Show loading spinner while cart is initializing
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-palestine-green-50 to-palestine-red-50 dark:from-palestine-black dark:to-palestine-black-light flex items-center justify-center">
@@ -56,11 +45,10 @@ export function CartPage({ onNavigate }: CartPageProps) {
     );
   }
 
-  if (!items || items.length === 0) {
+  if (!cartItems || cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-palestine-green-50 to-palestine-red-50 dark:from-palestine-black dark:to-palestine-black-light">
         <div className="container mx-auto px-4 py-8">
-          {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <Button
               variant="ghost"
@@ -75,8 +63,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
             </h1>
             <div></div>
           </div>
-
-          {/* Empty Cart */}
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingBag className="h-12 w-12 text-muted-foreground" />
@@ -106,7 +92,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-palestine-green-50 to-palestine-red-50 dark:from-palestine-black dark:to-palestine-black-light">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Button
             variant="ghost"
@@ -120,14 +105,13 @@ export function CartPage({ onNavigate }: CartPageProps) {
             {language === 'ar' ? 'سلة التسوق' : 'Shopping Cart'}
           </h1>
           <Badge variant="secondary" className="text-lg px-3 py-1">
-            {items.length} {language === 'ar' ? 'منتج' : 'items'}
+            {cartItems.length} {language === 'ar' ? 'منتج' : 'items'}
           </Badge>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
+            {cartItems.map((item) => (
               <Card key={`${item.id}-${JSON.stringify(item.selectedOptions)}`} className="shadow-lg border-0">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4 rtl:space-x-reverse">
@@ -147,7 +131,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
                         {language === 'ar' ? item.descriptionAr : item.descriptionEn}
                       </p>
                       
-                      {/* Selected Options */}
                       {item.selectedOptions && Object.keys(item.selectedOptions).length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3">
                           {Object.entries(item.selectedOptions).map(([key, value]) => (
@@ -158,7 +141,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
                         </div>
                       )}
                       
-                      {/* Price and Quantity */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
                           <Button
@@ -209,7 +191,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
             ))}
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="shadow-lg border-0 sticky top-8">
               <CardHeader className="bg-gradient-to-r from-palestine-green to-palestine-red text-white">
@@ -220,13 +201,11 @@ export function CartPage({ onNavigate }: CartPageProps) {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {/* Subtotal */}
                   <div className="flex justify-between">
                     <span>{language === 'ar' ? 'المجموع الفرعي:' : 'Subtotal:'}</span>
                     <span className="font-medium">${cartTotal.toFixed(2)}</span>
                   </div>
                   
-                  {/* Shipping */}
                   <div className="flex justify-between">
                     <span>{language === 'ar' ? 'الشحن:' : 'Shipping:'}</span>
                     <span className={`font-medium ${shippingCost === 0 ? 'text-palestine-green' : ''}`}>
@@ -245,13 +224,11 @@ export function CartPage({ onNavigate }: CartPageProps) {
                   
                   <Separator />
                   
-                  {/* Total */}
                   <div className="flex justify-between text-lg font-bold">
                     <span>{language === 'ar' ? 'المجموع:' : 'Total:'}</span>
                     <span className="text-palestine-green">${totalWithShipping.toFixed(2)}</span>
                   </div>
                   
-                  {/* Benefits */}
                   <div className="space-y-2 pt-4 border-t border-border">
                     <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
                       <ShieldCheck className="h-4 w-4 text-palestine-green" />
@@ -267,7 +244,6 @@ export function CartPage({ onNavigate }: CartPageProps) {
                     </div>
                   </div>
                   
-                  {/* Actions */}
                   <div className="space-y-3 pt-4">
                     <Button 
                       onClick={handleCheckout}

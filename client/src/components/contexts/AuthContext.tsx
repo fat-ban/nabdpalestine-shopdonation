@@ -15,6 +15,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -64,16 +65,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   ];
 
   useEffect(() => {
-    // Check for saved user in localStorage
-    const savedUser = localStorage.getItem('palestine-pulse-user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('palestine-pulse-user');
-      }
-    }
+    // We are no longer persisting auth state in localStorage to treat it like a session.
+    // A page refresh will log the user out.
     setIsLoading(false);
   }, []);
 
@@ -88,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     if (foundUser && password === 'password') {
       setUser(foundUser);
-      localStorage.setItem('palestine-pulse-user', JSON.stringify(foundUser));
+      // No longer persisting to localStorage
       setIsLoading(false);
       return true;
     }
@@ -115,27 +108,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
     
     setUser(newUser);
-    localStorage.setItem('palestine-pulse-user', JSON.stringify(newUser));
+    // No longer persisting to localStorage
     setIsLoading(false);
     return true;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('palestine-pulse-user');
+    // No longer removing from localStorage
   };
 
   const updateProfile = (data: Partial<User>) => {
     if (user) {
       const updatedUser = { ...user, ...data };
       setUser(updatedUser);
-      localStorage.setItem('palestine-pulse-user', JSON.stringify(updatedUser));
+      // No longer persisting to localStorage
     }
   };
 
   const value = {
     user,
     isLoading,
+    isAuthenticated: !!user,
     login,
     register,
     logout,
